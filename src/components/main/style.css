@@ -1,0 +1,38 @@
+*{
+    font-size: 14px;
+}
+:root {
+    --cor1: #FFD369;
+    --cor2: #BD9E54;
+    --cor3: #8C8C8C;
+    --cor4: #222831;
+    --cor5: #161717;
+}
+
+.main {
+  
+    background-color: var(--cor4);
+    height: calc(100% - 10px);
+    width: 100%;
+    position: fixed;
+    padding: 10px; /* Garante que o conteúdo não encoste nas bordas da tela */
+    box-sizing: border-box; /* Inclui padding no cálculo total de largura e altura */
+}
+
+.main-content {
+    max-width: 800px;
+    width: 100%; /* Garante que o conteúdo ocupe 100% do espaço disponível até o limite do max-width */
+    margin: 0 auto; /* Centraliza o conteúdo dentro de .main */
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        max-width: 95%; /* Para telas ainda menores */
+    }
+}

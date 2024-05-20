@@ -1,0 +1,70 @@
+:root {
+    --cor1: #FFD369;
+    --cor2: #BD9E54;
+    --cor3: #8C8C8C;
+    --cor4: #222831;
+    --cor5: #161717;
+}
+
+
+.container {
+    display: flex;
+    height: calc(100% - 50px);
+    /* Ajusta a altura do contêiner pai para 100% da altura da viewport */
+
+}
+.container1 {
+    height: 100%;
+    display: flex;
+
+}
+
+.bloco {
+    background-color: white;
+    width: 250px;
+    height: 100%;
+    margin: 10px;
+    border-color: darkgoldenrod;
+    border-radius: 20px;
+}
+.title {
+    padding: 8px 10px 8px 9px;
+
+    display: flex;
+    justify-content: space-between;
+align-items: center;    
+}   
+
+.button1{
+border-radius: 10px;
+height: 30px;
+width: 30px;
+}
+
+.bloco1 {
+    background-color: white;
+    width: 90%;
+    height: 100%;
+    border-radius: 20px;
+    margin: 10px;
+
+
+}
+
+.serviço {
+    margin: 20px ;
+    width: 100%;
+    height: 95%;
+    background-color: aliceblue;
+    box-sizing: border-box; /* Garante que o padding e bordas sejam incluídos na largura total */
+
+}
+.pesquisa {
+    padding: 8px 10px 8px 9px;
+}
+
+.info {
+    
+    width: 600px;
+    height: 100%;
+}
