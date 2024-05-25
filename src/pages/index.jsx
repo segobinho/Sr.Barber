@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Header from '../components/header/index';
 import Main from '../components/main/index';
-import { CiTrash } from "react-icons/ci"; // Importando o ícone de lixeira
+import { CiTrash } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
-
+import Modal from '../components/modal/index';
 import './style.css';
 
 function Receba() {
@@ -11,14 +11,15 @@ function Receba() {
     const [selectedService, setSelectedService] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({ nome: '', duracao: '', preco: '' });
-    const [filteredServices, setFilteredServices] = useState([]); // Adicionando estado para serviços filtrados
+    const [filteredServices, setFilteredServices] = useState([]);
+    const [showAddModal, setShowAddModal] = useState(false);
 
     useEffect(() => {
         fetch("http://localhost:8800/se")
             .then((response) => response.json())
             .then((data) => {
                 setServices(data);
-                setFilteredServices(data); // Inicializando os serviços filtrados com todos os serviços
+                setFilteredServices(data);
             });
     }, []);
 
@@ -38,7 +39,11 @@ function Receba() {
 
     const handleDeleteService = () => {
         if (!selectedService) {
-            // Se nenhum serviço estiver selecionado, apenas retorne sem fazer nada
+            return;
+        }
+
+        const confirmDelete = window.confirm("Tem certeza que deseja excluir este serviço?");
+        if (!confirmDelete) {
             return;
         }
 
@@ -47,12 +52,11 @@ function Receba() {
         })
             .then((response) => {
                 if (response.ok) {
-                    // Atualizar a lista de serviços após a exclusão
                     fetch("http://localhost:8800/se")
                         .then((response) => response.json())
                         .then((data) => {
                             setServices(data);
-                            setFilteredServices(data); // Atualizar também os serviços filtrados
+                            setFilteredServices(data);
                         });
                     setSelectedService(null);
                 }
@@ -77,7 +81,6 @@ function Receba() {
 
     const handleUpdateService = () => {
         if (!selectedService) {
-            // Se nenhum serviço estiver selecionado, apenas retorne sem fazer nada
             return;
         }
 
@@ -90,18 +93,36 @@ function Receba() {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
-                // Atualizar a lista de serviços após a edição
                 fetch("http://localhost:8800/se")
                     .then((response) => response.json())
                     .then((data) => {
                         setServices(data);
-                        setFilteredServices(data); // Atualizar também os serviços filtrados
+                        setFilteredServices(data);
                     });
                 setEditMode(false);
             });
     };
 
+    const handleAddService = () => {
+        fetch(`http://localhost:8800/service`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                fetch("http://localhost:8800/se")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        setServices(data);
+                        setFilteredServices(data);
+                    });
+                setFormData({ nome: '', duracao: '', preco: '' });
+                setShowAddModal(false);
+            });
+    };
 
     return (
         <div>
@@ -111,7 +132,7 @@ function Receba() {
                     <div className="bloco">
                         <div className="title">
                             <h1>Serviços</h1>
-                            <input className="button1" type="button" value="+" />
+                            <input className="button1" type="button" value="+" onClick={() => setShowAddModal(true)} />
                         </div>
                         <div className="input-and-buttons">
                             <div className="pesquisa">
@@ -126,6 +147,13 @@ function Receba() {
                                 </button>
                             </div>
                         </div>
+                        <Modal
+                            show={showAddModal}
+                            onClose={() => setShowAddModal(false)}
+                            onSubmit={handleAddService}
+                            formData={formData}
+                            onInputChange={handleFormInputChange}
+                        />
                         <hr />
                         <div className="service-list">
                             {filteredServices.map((service) => (
@@ -143,10 +171,10 @@ function Receba() {
 
                     <div className="bloco1">
                         <div className="container1">
-                            {selectedService ? (
+                            {selectedService && (
                                 editMode ? (
-                                    <div>
-                                        <div className="">
+                                    <div className="editar">
+                                        <div className="form-group">
                                             <label>Nome:</label>
                                             <input
                                                 type="text"
@@ -155,7 +183,7 @@ function Receba() {
                                                 onChange={handleFormInputChange}
                                             />
                                         </div>
-                                        <div className="">
+                                        <div className="form-group">
                                             <label>Duração:</label>
                                             <input
                                                 type="text"
@@ -164,7 +192,7 @@ function Receba() {
                                                 onChange={handleFormInputChange}
                                             />
                                         </div>
-                                        <div className="">
+                                        <div className="form-group">
                                             <label>Preço:</label>
                                             <input
                                                 type="text"
@@ -174,7 +202,6 @@ function Receba() {
                                             />
                                         </div>
                                         <input
-                                            className="button-update"
                                             type="button"
                                             value="Atualizar"
                                             onClick={handleUpdateService}
@@ -183,20 +210,16 @@ function Receba() {
                                 ) : (
                                     <>
                                         <div className="serviço">
-                                            <div className="serviço-titulo" >
-                                                titulo
+                                            <div className="serviço-titulo">
+                                                {selectedService.nome}
                                             </div>
                                             <div className="serviço-info">
-                                                <p> duração : {selectedService.duracao}</p>
-                                                <p> preço :{selectedService.preco}</p>
-                                                <p>nome :{selectedService.nome}</p>
+                                                <p>Duração: {selectedService.duracao}</p>
+                                                <p>Preço: {selectedService.preco}</p>
                                             </div>
                                         </div>
-
                                     </>
                                 )
-                            ) : (
-                                <p>Selecione um serviço para ver os detalhes</p>
                             )}
                         </div>
                     </div>

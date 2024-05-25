@@ -44,3 +44,17 @@ export const deleteService = (req, res) => {
         return res.status(200).json("Serviço excluído com sucesso");
     });
 };
+
+// user.js
+
+export const addService = (req, res) => {
+    const { nome, duracao, preco } = req.body;
+    const q = "INSERT INTO Servicos (nome, duracao, preco) VALUES (?, ?, ?)";
+
+    db.query(q, [nome, duracao, preco], (err, data) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json("Serviço adicionado com sucesso");
+    });
+};
+
