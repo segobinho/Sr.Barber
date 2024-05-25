@@ -18,9 +18,9 @@
     display: flex;
 
 }
-
+/* bloclo */
 .bloco {
-    background-color: white;
+    background-color: var(--cor5);
     width: 250px;
     height: 100%;
     margin: 10px;
@@ -28,19 +28,63 @@
     border-radius: 20px;
 }
 .title {
-    padding: 8px 10px 8px 9px;
-
+    color: var(--cor1);
     display: flex;
     justify-content: space-between;
-align-items: center;    
+    align-items: center;   
+    margin-bottom: 0px; 
+    margin-left:8px ;
 }   
-
+.title > h1 {
+    font-size: 30px;
+}
 .button1{
 border-radius: 10px;
 height: 30px;
 width: 30px;
+color: var(--cor1);
+background-color: var(--cor5);
+border-color: var(--cor1);
+margin-right: 8px;
+margin-top: 4px;
 }
 
+.pesquisa-input{
+    padding: 2px;
+    margin: 5px;
+    background-color: var(--cor5);
+    border-color: var(--cor3);
+    color: var(--cor1);
+
+}
+.pesquisa-input::placeholder {
+    color: var(--cor1);
+}
+
+.button-container{
+    margin: 10px 0px 0px 5px;
+   }
+   .button-delete {
+   background-color: var(--cor5);
+   color: var(--cor1);
+   margin-left: 8px;
+   }
+   .button-edit{
+       background-color: var(--cor5);
+       color: var(--cor1);
+       
+   }
+.service-title:hover{
+    margin: 2px;
+    color: var(--cor2);
+    padding: 2px;
+    border-radius: 4px;
+    background-color: var(--cor4);
+    }
+    
+
+
+/* bloco 1 */
 .bloco1 {
     background-color: white;
     width: 90%;
@@ -55,16 +99,43 @@ width: 30px;
     margin: 20px ;
     width: 100%;
     height: 95%;
-    background-color: aliceblue;
+    background-color: var(--cor1);
     box-sizing: border-box; /* Garante que o padding e bordas sejam incluídos na largura total */
 
 }
-.pesquisa {
-    padding: 8px 10px 8px 9px;
+
+.service-item{
+    margin: 10px;
+    font-size: 19px;
+    color: var(--cor1);
+   
 }
+
+
+.serviço-titulo {
+    margin: 0px;
+    padding: 0px;
+    background-color: grey;
+    font-size: 19px;
+    color: beige;
+    height: 50px;
+    display: flex;
+   align-items: center;
+   padding-left: 30px;
+   border-radius: 2px;
+   
+}
+
 
 .info {
     
     width: 600px;
     height: 100%;
 }
+
+.editar {
+    display: flex   ;
+    align-items: center;
+    flex-direction: column;
+}
+

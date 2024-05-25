@@ -1,8 +1,12 @@
 import express from "express";
-import {getUsers} from "../controllers/user.js"
+import { getUsers, getServiceById, updateService, deleteService } from "../controllers/user.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/", getUsers)
+router.get("/", getUsers);
+router.get("/se", getUsers);
+router.get("/service/:id", getServiceById);
+router.put("/service/:id", updateService);
+router.delete("/service/:id", deleteService); // Nova rota para excluir um serviço
 
-export default router
+export default router;
