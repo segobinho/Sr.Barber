@@ -1,0 +1,13 @@
+.barbeariap {
+    color: #FFD369 ;
+}
+
+.barbearias-list{
+    margin: 10px;
+    font-size: 19px;
+    color: var(--cor1);
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+   
+}

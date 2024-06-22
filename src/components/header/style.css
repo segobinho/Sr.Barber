@@ -61,3 +61,10 @@
   color: var(--cor3);
   display: flex;
   }
+
+  .cargoheader{
+    margin-right: 20px;
+  }
+  .logout-button{
+    margin-right: 15px;
+  }

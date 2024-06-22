@@ -1,0 +1,85 @@
+:root {
+  --color1: #FF9900;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevenir rolagem lateral no body */
+}
+
+.login-container {
+  background-color: #FFD369;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw; /* Garantir que ocupe 100% da largura da viewport */
+  overflow: hidden; /* Prevenir rolagem lateral */
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  width: 387px;
+  padding: 40px;
+  border-radius: 20px;
+  box-sizing: border-box; /* Garantir que o padding seja incluído na largura total */
+  z-index: 2; /* Garantir que o login-box esteja acima do círculo */
+}
+
+.login-button {
+  margin-top: 20px; /* Diminuir espaço entre o campo de senha e o botão de login */
+  height: 50px; /* Aumentar a altura do botão */
+  width: 100%; /* Ajustar para ocupar 100% do contêiner */
+  padding: 10px;
+  background-color: white;
+  color: #FFD369;
+  border: none;
+  border-radius: 0px; /* Retirar bordas arredondadas para botão quadrado */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Adicionar sombra pequena */
+  box-sizing: border-box; /* Garantir que o padding seja incluído na largura total */
+}
+
+.circle {
+  position: absolute;
+  bottom: -25%;
+  left: -25%;
+  width: 40vw;
+  height: 40vw;
+  background-color: #BD9E54;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.login-button:hover {
+  background-color: #FF8000; 
+}
+
+.loginInput {
+  border-radius: 0px; /* Retirar bordas arredondadas para input quadrado */
+  height: 50px; /* Aumentar a altura do input */
+  width: 100%; /* Ajustar para ocupar 100% do contêiner */
+  font-size: 20px;
+  border: 2px solid white; /* Bordas brancas */
+  padding: 0 10px; /* Adicionar padding horizontal */
+  background-color: #FFD369; /* Fundo da mesma cor que o fundo */
+  color: white; /* Palavras do input brancas */
+  box-sizing: border-box; /* Garantir que o padding seja incluído na largura total */
+}
+
+.loginInput::placeholder {
+  color: white; /* Placeholder branco */
+}
+
+.email {
+  padding-top: 30px;
+}
+
+.senha {
+  margin-top: 20px; /* Diminuir espaço entre o email e o campo de senha */
+}

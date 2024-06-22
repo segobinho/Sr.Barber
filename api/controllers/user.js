@@ -1,7 +1,11 @@
 import { db } from "../db.js";
 
 export const getUsers = (_, res) => {
-    const q = "SELECT * FROM Servicos";
+    const q = `
+        SELECT s.*, b.nome AS barbearia_nome, b.endereco AS barbearia_endereco
+        FROM Servicos s
+        JOIN Barbearias b ON s.id_barbearia = b.id_barbearia
+    `;
     
     db.query(q, (err, data) => {
         if (err) return res.json(err);
@@ -10,9 +14,15 @@ export const getUsers = (_, res) => {
     });
 };
 
+
 export const getServiceById = (req, res) => {
     const { id } = req.params;
-    const q = "SELECT * FROM Servicos WHERE id_servico = ?";
+    const q = `
+        SELECT s.*, b.nome AS barbearia_nome, b.endereco AS barbearia_endereco
+        FROM Servicos s
+        JOIN Barbearias b ON s.id_barbearia = b.id_barbearia
+        WHERE s.id_servico = ?
+    `;
     
     db.query(q, [id], (err, data) => {
         if (err) return res.json(err);
@@ -20,6 +30,7 @@ export const getServiceById = (req, res) => {
         return res.status(200).json(data[0]);
     });
 };
+
 
 export const updateService = (req, res) => {
     const { id } = req.params;
@@ -33,28 +44,35 @@ export const updateService = (req, res) => {
     });
 };
 
-// Função para excluir um serviço
 export const deleteService = (req, res) => {
-    const { id } = req.params;
-    const q = "DELETE FROM Servicos WHERE id_servico = ?";
+    
+    const q = "DELETE FROM Servicos WHERE `id_servico` = ?";
 
-    db.query(q, [id], (err, data) => {
+    db.query(q, [req.params.id_servico], (err) => {
         if (err) return res.json(err);
 
         return res.status(200).json("Serviço excluído com sucesso");
     });
 };
 
-// user.js
-
 export const addService = (req, res) => {
-    const { nome, duracao, preco } = req.body;
-    const q = "INSERT INTO Servicos (nome, duracao, preco) VALUES (?, ?, ?)";
+    const { nome, duracao, preco, id_barbearia } = req.body;
+    const q = "INSERT INTO Servicos (nome, duracao, preco, id_barbearia) VALUES (?, ?, ?, ?)";
 
-    db.query(q, [nome, duracao, preco], (err, data) => {
+    db.query(q, [nome, duracao, preco, id_barbearia], (err, data) => {
         if (err) return res.json(err);
 
         return res.status(200).json("Serviço adicionado com sucesso");
     });
 };
 
+
+export const getBarbearias = (_, res) => {
+    const q = "SELECT * FROM Barbearias";
+    
+    db.query(q, (err, data) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json(data);
+    });
+};

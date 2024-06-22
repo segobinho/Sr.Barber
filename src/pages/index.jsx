@@ -1,66 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from '../components/header/index';
 import Main from '../components/main/index';
 import { CiTrash } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
 import Modal from '../components/modal/index';
 import './style.css';
+import useFetchServices from "../components/FetchAllData/index";
+import axios from "axios";
+import { toast} from "react-toastify";
+import { IoIosAddCircleOutline } from "react-icons/io";
+
 
 function Receba() {
-    const [services, setServices] = useState([]);
+    const { services, setServices,  setFilteredServices } = useFetchServices("http://localhost:8800/se");
     const [selectedService, setSelectedService] = useState(null);
     const [editMode, setEditMode] = useState(false);
-    const [formData, setFormData] = useState({ nome: '', duracao: '', preco: '' });
-    const [filteredServices, setFilteredServices] = useState([]);
+    const [formData, setFormData] = useState({ nome: '', duracao: '', preco: '', id_barbearia: '' });
     const [showAddModal, setShowAddModal] = useState(false);
+    const [barbearias, setBarbearias] = useState([]);
+    const [user, setUser] = useState(null); // Inicializa user como null
 
     useEffect(() => {
-        fetch("http://localhost:8800/se")
-            .then((response) => response.json())
-            .then((data) => {
-                setServices(data);
-                setFilteredServices(data);
-            });
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData); // Define user com o valor do localStorage
+
+        fetch("http://localhost:8800/barbearias")
+            .then(response => response.json())
+            .then(data => setBarbearias(data));
     }, []);
+
+    useEffect(() => {
+        if (user && user.cargo) { // Verifica se user e user.cargo existem antes de acessar
+            fetch("http://localhost:8800/se")
+                .then(response => response.json())
+                .then(data => {
+                    if (user.cargo === 'admin') {
+                        setServices(data);
+                        setFilteredServices(data);
+                    } else if (user.cargo === 'gerente') {
+                        const filteredData = data.filter(service => service.id_barbearia === user.id_barbearia);
+                        setServices(filteredData);
+                        setFilteredServices(filteredData);
+                    }
+                });
+        }
+    }, [user]); // Executa o useEffect sempre que user mudar
 
     const handleServiceClick = (id) => {
         fetch(`http://localhost:8800/service/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 setSelectedService(data);
-                setFormData({ nome: data.nome, duracao: data.duracao, preco: data.preco });
+                setFormData({ nome: data.nome, duracao: data.duracao, preco: data.preco, id_barbearia: data.id_barbearia });
                 setEditMode(false);
             });
     };
 
-    const handleEditService = () => {
-        setEditMode(true);
+    const handleEditService = (id) => {
+        fetch(`http://localhost:8800/service/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setSelectedService(data);
+                setFormData({ nome: data.nome, duracao: data.duracao, preco: data.preco });
+                setEditMode(true);
+            });
     };
 
-    const handleDeleteService = () => {
-        if (!selectedService) {
+    const handleDelete = async (id_servico) => {
+        if (!window.confirm("Tem certeza que deseja excluir este serviço?")) {
             return;
         }
+        await axios
+            .delete("http://localhost:8800/service/" + id_servico)
+            .then(({ data }) => {
+                const newArray = services.filter((services) => services.id_servico !== id_servico);
 
-        const confirmDelete = window.confirm("Tem certeza que deseja excluir este serviço?");
-        if (!confirmDelete) {
-            return;
-        }
-
-        fetch(`http://localhost:8800/service/${selectedService.id_servico}`, {
-            method: 'DELETE',
-        })
-            .then((response) => {
-                if (response.ok) {
-                    fetch("http://localhost:8800/se")
-                        .then((response) => response.json())
-                        .then((data) => {
-                            setServices(data);
-                            setFilteredServices(data);
-                        });
-                    setSelectedService(null);
-                }
-            });
+                setServices(newArray);
+                toast.success("Serviço excluído com sucesso");
+            })
+            .catch(({ data }) => toast.error(data));
     };
 
     const handleInputChange = (e) => {
@@ -80,10 +98,6 @@ function Receba() {
     };
 
     const handleUpdateService = () => {
-        if (!selectedService) {
-            return;
-        }
-
         fetch(`http://localhost:8800/service/${selectedService.id_servico}`, {
             method: 'PUT',
             headers: {
@@ -96,30 +110,49 @@ function Receba() {
                 fetch("http://localhost:8800/se")
                     .then((response) => response.json())
                     .then((data) => {
-                        setServices(data);
-                        setFilteredServices(data);
+                        if (user.cargo === 'admin') {
+                            setServices(data);
+                            setFilteredServices(data);
+                        } else if (user.cargo === 'gerente') {
+                            const filteredData = data.filter(service => service.id_barbearia === user.id_barbearia);
+                            setServices(filteredData);
+                            setFilteredServices(filteredData);
+                        }
                     });
+                setEditMode(false);
+                setSelectedService({ ...selectedService, ...formData });
                 setEditMode(false);
             });
     };
 
     const handleAddService = () => {
-        fetch(`http://localhost:8800/service`, {
+        const serviceData = {
+            ...formData,
+            id_barbearia: user.cargo === 'gerente' ? user.id_barbearia : formData.id_barbearia
+        };
+
+        fetch("http://localhost:8800/service", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(serviceData),
         })
             .then((response) => response.json())
             .then((data) => {
                 fetch("http://localhost:8800/se")
                     .then((response) => response.json())
                     .then((data) => {
-                        setServices(data);
-                        setFilteredServices(data);
+                        if (user.cargo === 'admin') {
+                            setServices(data);
+                            setFilteredServices(data);
+                        } else if (user.cargo === 'gerente') {
+                            const filteredData = data.filter(service => service.id_barbearia === user.id_barbearia);
+                            setServices(filteredData);
+                            setFilteredServices(filteredData);
+                        }
                     });
-                setFormData({ nome: '', duracao: '', preco: '' });
+                setFormData({ nome: '', duracao: '', preco: '', id_barbearia: '' });
                 setShowAddModal(false);
             });
     };
@@ -132,40 +165,40 @@ function Receba() {
                     <div className="bloco">
                         <div className="title">
                             <h1>Serviços</h1>
-                            <input className="button1" type="button" value="+" onClick={() => setShowAddModal(true)} />
+                          
+                                <IoIosAddCircleOutline className="button1" onClick={() => setShowAddModal(true)} />
+                                
+
+                            
                         </div>
-                        <div className="input-and-buttons">
-                            <div className="pesquisa">
-                                <input className="pesquisa-input" type="text" onChange={handleInputChange} placeholder="Pesquisar serviços" />
-                            </div>
-                            <div className="button-container">
-                                <button className="button-edit" onClick={handleEditService}>
-                                    <GoPencil />
-                                </button>
-                                <button className="button-delete" onClick={handleDeleteService}>
-                                    <CiTrash />
-                                </button>
-                            </div>
-                        </div>
+                     
                         <Modal
                             show={showAddModal}
                             onClose={() => setShowAddModal(false)}
                             onSubmit={handleAddService}
                             formData={formData}
                             onInputChange={handleFormInputChange}
+                            barbearias={barbearias}
+                            hideBarbeariaField={user && user.cargo === 'gerente'} // Passa hideBarbeariaField apenas se user e user.cargo existirem
                         />
                         <hr />
                         <div className="service-list">
-                            {filteredServices.map((service) => (
-                                <div key={service.id_servico} className="service-item-container">
-                                    <div
-                                        className="service-item"
-                                        onClick={() => handleServiceClick(service.id_servico)}
-                                    >
-                                        <h1 className="service-title">{service.nome}</h1>
-                                    </div>
-                                </div>
-                            ))}
+                        {services.map((item, i) => (
+    <div key={item.id_servico} className="service-item-container">
+        <div className="service-item" >
+            <div className="service-header">
+                <div onClick={() => handleServiceClick(item.id_servico)}>
+                <h1>{item.nome}</h1>
+                </div>
+                <div className="icon-container">
+                    <CiTrash className="icon-delete" onClick={() => handleDelete(item.id_servico)} />
+                    <GoPencil className="icon-edit" onClick={() => handleEditService(item.id_servico)} />
+                </div>
+            </div>
+            <p>{item.barbearia_endereco}</p>
+        </div>
+    </div>
+))}
                         </div>
                     </div>
 
@@ -191,22 +224,24 @@ function Receba() {
                                                 value={formData.duracao}
                                                 onChange={handleFormInputChange}
                                             />
-                                        </div>
-                                        <div className="form-group">
-                                            <label>Preço:</label>
-                                            <input
-                                                type="text"
-                                                name="preco"
-                                                value={formData.preco}
-                                                onChange={handleFormInputChange}
-                                            />
-                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Preço:</label>
+                                        <input
+                                            type="text"
+                                            name="preco"
+                                            value={formData.preco}
+                                            onChange={handleFormInputChange}
+                                        />
+                                    </div>
+                                   
                                         <input
                                             type="button"
                                             value="Atualizar"
                                             onClick={handleUpdateService}
                                         />
-                                    </div>
+                                    
+                                </div>
                                 ) : (
                                     <>
                                         <div className="serviço">
@@ -214,8 +249,10 @@ function Receba() {
                                                 {selectedService.nome}
                                             </div>
                                             <div className="serviço-info">
-                                                <p>Duração: {selectedService.duracao}</p>
-                                                <p>Preço: {selectedService.preco}</p>
+                                                <p className="pserviço-info">Duração: {selectedService.duracao}</p>
+                                                <p className="pserviço-info">Preço: {selectedService.preco}</p>
+                                                <p className="pserviço-info">Barbearia: {selectedService.barbearia_nome}</p>
+                                                <p className="pserviço-info">Endereço: {selectedService.barbearia_endereco}</p>
                                             </div>
                                         </div>
                                     </>
@@ -225,8 +262,9 @@ function Receba() {
                     </div>
                 </div>
             </Main>
+           
         </div>
-    );
+    );  
 }
 
 export default Receba;

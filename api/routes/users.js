@@ -1,6 +1,7 @@
 import express from "express";
-import { getUsers, getServiceById, updateService, deleteService, addService } from "../controllers/user.js";
-
+import { getUsers, getServiceById, updateService, deleteService, addService, getBarbearias } from "../controllers/user.js";
+import { testesla } from "../controllers/testando.js";
+import {getFuncionarios} from "../controllers/funcionarios.js"
 
 const router = express.Router();
 
@@ -8,7 +9,12 @@ router.get("/", getUsers);
 router.get("/se", getUsers);
 router.get("/service/:id", getServiceById);
 router.put("/service/:id", updateService);
-router.delete("/service/:id", deleteService); 
+router.delete("/service/:id_servico", deleteService);
 router.post("/service", addService);
+router.post("/login", testesla);
+router.get("/barbearias", getBarbearias);
+router.get("/funcionarios", getFuncionarios);
+
+
 
 export default router;

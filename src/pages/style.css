@@ -36,22 +36,34 @@
 }
 .button1{
 border-radius: 10px;
-height: 30px;
-width: 30px;
+height: 35px;
+width: 35px;
 color: var(--cor1);
-background-color: var(--cor5);
 border-color: var(--cor1);
 margin-right: 8px;
 margin-top: 4px;
 }
-
-.pesquisa-input{
+.button1:hover {
+    color: #f4b522;
+    height: 40px;
+}
+.pesquisa-input {
     padding: 2px;
     margin: 5px;
-    background-color: var(--cor5);
-    border-color: var(--cor3);
-    color: var(--cor1);
+    background-color: transparent;
+    border: none; /* Remove a borda */
+    border-radius: 10px;
+    outline: none; /* Remove o contorno ao focar */
+    color:var(--cor1);
+}
+.pesquisa-input:hover {
+    margin: 8px;
+    
 
+
+}
+.pesquisa-input:hover::placeholder {
+    color: #f4b522; /* Cor do placeholder ao passar o mouse */
 }
 .pesquisa-input::placeholder {
     color: var(--cor1);
@@ -115,7 +127,29 @@ margin-top: 4px;
     margin: 10px;
     font-size: 19px;
     color: var(--cor1);
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
    
+}
+.service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.icon-edit,
+.icon-delete {
+    background-color: transparent; /* Torna o fundo dos botões transparente */
+    border: none; /* Remove borda dos botões */
+    color: var(--cor1);
+    font-size: 25px;
+}
+
+.button-edit:hover,
+.button-delete:hover {
+    color: #f4b522;
 }
 
 
@@ -134,6 +168,10 @@ margin-top: 4px;
 }
 .serviço-info{ 
     margin: 20px;
+    
+}
+.pserviço-info {
+    font-size: 20px;
 }
 
 .info {
@@ -161,6 +199,7 @@ margin-top: 4px;
         box-sizing: border-box; 
         color: var(--cor1);
         box-shadow: 1px 1px 5px var(--cor4);
+
 }
 .form-group {
     display: flex;
@@ -180,3 +219,11 @@ margin-top: 4px;
     border-radius: 4px;
     width: 100%;
 }
+
+.service-list {
+    height: calc(100% - 130px); /* Ajusta a altura da lista de serviços */
+    overflow-y: auto; /* Adiciona barra de rolagem vertical */
+    padding-right: 15px; /* Garante que a barra de rolagem não sobreponha o conteúdo */
+}
+
+
