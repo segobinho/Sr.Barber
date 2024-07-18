@@ -3,7 +3,6 @@ import './stylelogin.css';
 import Validation from '../../hooks/LoginValidation';  
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import userIcon from '../../assets/logobarber.png'; // Importe sua imagem aqui
 
 function Login() {
     const [values, setValues] = useState({
@@ -39,10 +38,10 @@ function Login() {
     };
     
     return (
+        <div className="LoginImage">
         <div className='login-container'>
             <form onSubmit={handleSubmit}>
                 <div className="login-box">
-                    <img src={userIcon} alt="Ícone de usuário" className="user-icon" /> {/* Imagem de ícone de usuário */}
                     <input type="text" className="loginInput" placeholder="Usuário" name='email'
                     onChange={handleInput} />
                     {errors.email && <span className="">{errors.email}</span>}
@@ -55,6 +54,7 @@ function Login() {
                     <button type="submit" className='login-button'>Login</button>
                 </div>
             </form>
+        </div>
         </div>
     );
 }

@@ -1,7 +1,12 @@
 :root {
   --color1: #FF9900;
 }
+.LoginImage
+{
+  background-image: url('../../assets/Dashboard\ Login\ 2.jpg'); /* Caminho da sua imagem de fundo */
+  background-size: cover; /* Cobrir toda a área da viewport */
 
+}
 body, html {
   margin: 0;
   padding: 0;
@@ -11,7 +16,6 @@ body, html {
 }
 
 .login-container {
-  background-color: #FFD369;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,6 +32,8 @@ body, html {
   border-radius: 20px;
   box-sizing: border-box; /* Garantir que o padding seja incluído na largura total */
   z-index: 2; /* Garantir que o login-box esteja acima do círculo */
+  margin-top:120px;
+  margin-right: 40px;
 }
 
 .login-button {
@@ -41,7 +47,7 @@ body, html {
   border-radius: 0px; /* Retirar bordas arredondadas para botão quadrado */
   cursor: pointer;
   transition: background-color 0.3s;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Adicionar sombra pequena */
+  box-shadow: 3px 4px 5px rgba(0, 0, 0, 0.2); /* Adicionar sombra pequena */
   box-sizing: border-box; /* Garantir que o padding seja incluído na largura total */
 }
 
@@ -57,7 +63,7 @@ body, html {
 }
 
 .login-button:hover {
-  background-color: #FF8000; 
+  background-color: #BD9E54; 
 }
 
 .loginInput {
@@ -65,11 +71,12 @@ body, html {
   height: 50px; /* Aumentar a altura do input */
   width: 100%; /* Ajustar para ocupar 100% do contêiner */
   font-size: 20px;
-  border: 2px solid white; /* Bordas brancas */
+  border: 1px solid white; /* Bordas brancas */
   padding: 0 10px; /* Adicionar padding horizontal */
   background-color: #FFD369; /* Fundo da mesma cor que o fundo */
   color: white; /* Palavras do input brancas */
   box-sizing: border-box; /* Garantir que o padding seja incluído na largura total */
+
 }
 
 .loginInput::placeholder {
