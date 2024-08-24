@@ -31,6 +31,9 @@ function Login() {
                     navigate('/Home');
                 } else {
                     alert("No record existed");
+                    window.location.reload();
+
+                    
                 }
             })
             .catch(err => console.log(err));

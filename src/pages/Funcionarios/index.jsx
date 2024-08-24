@@ -6,17 +6,33 @@ import axios from "axios";
 
 function Funcionarios() {
     const [funcionarios, setFuncionarios] = useState([]);
+    const [user, setUser] = useState([]);
+
+
 
     useEffect(() => {
-        axios.get('http://localhost:8800/funcionarios')
-            .then(response => {
-                setFuncionarios(response.data); // Assumindo que a resposta contém os dados dos funcionários
-            })
-            .catch(error => {
-                console.error('Erro ao buscar funcionários:', error);
-            });
-    }, []); // O array vazio assegura que o useEffect será executado apenas uma vez, equivalente ao componentDidMount
-    
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData); // Define user com o valor do localStorage
+    }, []);
+
+    useEffect(() => {
+        if (user && user.cargo) {
+            axios.get('http://localhost:8800/funcionarios')
+                .then(response => {
+                    if (user.cargo === 'admin') {
+                        setFuncionarios(response.data);
+                    } else if (user.cargo === 'gerente' || user.cargo === 'funcionario') {
+                        const filteredData = response.data.filter(service => service.id_barbearia === user.id_barbearia);
+                        setFuncionarios(filteredData);
+                    }
+                }
+                )
+        }
+    }
+    )
+
+
+
     return (
         <div>
             <Header />

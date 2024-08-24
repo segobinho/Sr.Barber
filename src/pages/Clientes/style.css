@@ -1,0 +1,49 @@
+.container1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+}
+.container2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    margin-bottom: 500px;
+
+}
+.cliente-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.cliente-info {
+    margin-bottom: 20px;
+}
+
+.icon-edit,
+.icon-delete {
+    font-size: 24px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.icon-container {
+    display: flex;
+    justify-content: center;
+}
+
+
+p {
+    color: yellow;
+    
+}
+
+h2.cliente-title     {
+    color: yellow ;
+    font-size: 35px;
+}
