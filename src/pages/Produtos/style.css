@@ -1,0 +1,170 @@
+/* Estilos Gerais */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: grey;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+h4 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Estilo do Bloco de Cadastro */
+/* Adicione este CSS ao seu arquivo de estilos */
+
+.content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.bloco1a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #f8f9fa; /* Cor de fundo opcional */
+    box-sizing: border-box; /* Para incluir o padding no cálculo do tamanho total */
+    overflow-y: auto; /* Se o conteúdo for maior que a tela, permite rolar */
+}
+
+
+.form-product .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.form-product .col-md-3 {
+    flex: 1;
+    min-width: 250px;
+}
+
+.form-label {
+    margin-bottom: 5px;
+    display: block;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Estilo da Listagem de Produtos */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table thead {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.action {
+    display: flex;
+    gap: 10px;
+}
+
+.action button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.action button .edit {
+    color: #007bff;
+}
+
+.action button .delete {
+    color: #dc3545;
+}
+
+.message-error {
+    color: #dc3545;
+    margin-bottom: 10px;
+}
+
+/* Estilo do Formulário de Pesquisa */
+.search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search input,
+.search select {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search .btn-primary {
+    flex: none;
+    padding: 10px 15px;
+}
+
+.search .btn-secondary {
+    flex: none;
+    padding: 10px 15px;
+}

@@ -8,60 +8,88 @@ import useGetData from "../../hooks/Alldata/Getdata";
 import { CiTrash } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
 
-
-// get clietes 
 function Clientes() {
-    const [clientes, setClietes] = useState([]);
+    const [clientes, setClientes] = useState([]);
     const [user, setUser] = useState([]);
-    const [selectedCliente, setSelectedCliente] = useState(null); // Estado para armazenar o cliente selecionado
-    const [values, setValues] = useState();
+    const [selectedCliente, setSelectedCliente] = useState(null);
+    const [values, setValues] = useState({});
     const [showAddClienteForm, setShowAddClienteForm] = useState(false);
-    const [formcliente, setFormcliente] = useState({
-        name: '',
+    const [isEditing, setIsEditing] = useState(false);
 
-    })
-
-    // Define user com o valor do localStorage
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
-        console.log(userData);
-        console.log(clientes)
-
     }, []);
 
-    //função get clietes
-    useGetData('http://localhost:8800/clientes', user, setClietes);
+    useGetData('http://localhost:8800/clientes', user, setClientes);
 
-
-
-    const handleaddValues = (value) => {
+    const handleAddValues = (event) => {
         setValues((prevValues) => ({
             ...prevValues,
-            [value.target.name]: value.target.value,
+            [event.target.name]: event.target.value,
         }));
     };
 
-    const handleClienteadd = () => {
-        axios.post('http://localhost:8800/clientes', {
-            name: values.nome,
+    const handleClienteAdd = () => {
+        axios.post('http://localhost:8800/add', {
+            nome: values.nome,
             telefone: values.telefone,
-            endereco: values.edereco,
+            endereco: values.endereco,
         }).then((response) => {
-            console.log(response);
-        })
-    }
+            setClientes([...clientes, response.data]);
+            setValues({});
+            setShowAddClienteForm(false);
+        });
+    };
 
-    // selecionar info cliente ao cliclar 
     const handleClienteClick = (cliente) => {
-        setSelectedCliente(cliente); // Atualiza o estado com o cliente selecionado
+        setSelectedCliente(cliente);
+        setIsEditing(false);
+        setShowAddClienteForm(false);
     };
 
-    const handleClienteaddform = () => {
-        setShowAddClienteForm((prev) => !prev); // Alterna entre mostrar e esconder o formulário
+    const handleClienteEditForm = () => {
+        setIsEditing(true);
+        setValues({
+            nome: selectedCliente.nome,
+            telefone: selectedCliente.telefone,
+            endereco: selectedCliente.endereco,
+        });
+        setShowAddClienteForm(true);
     };
 
+    const handleSaveEdit = () => {
+        axios.put(`http://localhost:8800/clientes/${selectedCliente.id_cliente}`, values)
+            .then((response) => {
+                setClientes(clientes.map(cliente =>
+                    cliente.id_cliente === selectedCliente.id_cliente ? response.data : cliente
+                ));
+                setIsEditing(false);
+                setSelectedCliente(response.data);
+                setShowAddClienteForm(false);
+            })
+            .catch((error) => {
+                console.error("Erro ao salvar edição:", error);
+            });
+    };
 
+    const handleClienteAddForm = () => {
+        setIsEditing(false);
+        setSelectedCliente(null); 
+        setValues({});
+        setShowAddClienteForm(true);
+    };
+
+    const handleClienteDelete = (clienteId) => {
+        axios.delete(`http://localhost:8800/clientes/${clienteId}`)
+            .then(() => {
+                setClientes(clientes.filter(cliente => cliente.id_cliente !== clienteId));
+                setSelectedCliente(null);
+            })
+            .catch((error) => {
+                console.error("Erro ao deletar cliente:", error);
+            });
+    };
 
     return (
         <div>
@@ -71,23 +99,53 @@ function Clientes() {
                     <div className="bloco">
                         <div className="title">
                             <h1>Clientes</h1>
-                            < IoIosAddCircleOutline className="button1" onClick={(handleClienteaddform)} />
+                            <IoIosAddCircleOutline className="button-add" onClick={handleClienteAddForm} />
                         </div>
                         <hr />
-                        <div >
+                        <div>
                             {clientes.map(cliente => (
-                                <div className="barbearias-list" key={cliente.id}>
+                                <div className="barbearias-list" key={cliente.id_cliente}>
                                     <div onClick={() => handleClienteClick(cliente)}>
                                         <p className="clientep"><strong>Nome:</strong> {cliente.nome}</p>
                                     </div>
-                                    <p className="clientep"><strong>Endereço:</strong> {cliente.telefone}</p>
+                                    <p className="clientep"><strong>Endereço:</strong> {cliente.endereco}</p>
+                                    <CiTrash className="icon-delete" title="Deletar Cliente" onClick={() => handleClienteDelete(cliente.id_cliente)} />
                                 </div>
                             ))}
                         </div>
                     </div>
                     <div className="bloco1">
                         <div className="container1">
-                            {selectedCliente ? (
+                            {showAddClienteForm && (
+                                <div className="container2">
+                                    <h2 className="cliente-title">{isEditing ? "Editar Cliente" : "Adicionar Cliente"}</h2>
+                                    <input
+                                        type="text"
+                                        name="nome"
+                                        placeholder="Nome"
+                                        value={values.nome || ''}
+                                        onChange={handleAddValues}
+                                    />
+                                    <input
+                                        type="number"
+                                        name="telefone"
+                                        placeholder="Telefone"
+                                        value={values.telefone || ''}
+                                        onChange={handleAddValues}
+                                    />
+                                    <input
+                                        type="text"
+                                        name="endereco"
+                                        placeholder="Endereço"
+                                        value={values.endereco || ''}
+                                        onChange={handleAddValues}
+                                    />
+                                    <button className="button-save" onClick={isEditing ? handleSaveEdit : handleClienteAdd}>
+                                        {isEditing ? 'Salvar' : 'Adicionar Cliente'}
+                                    </button>
+                                </div>
+                            )}
+                            {!showAddClienteForm && !isEditing && selectedCliente && (
                                 <div className="container2">
                                     <h2 className="cliente-title">Detalhes do Cliente</h2>
                                     <div className="cliente-info">
@@ -96,48 +154,14 @@ function Clientes() {
                                         <p><strong>Telefone:</strong> {selectedCliente.telefone}</p>
                                     </div>
                                     <div className="icon-container">
-                                        <GoPencil className="icon-edit" title="Editar Cliente" />
-                                        <CiTrash className="icon-delete" title="Remover Cliente" />
-                                        <button>deletar</button>
-                                        <button type="button">editar</button>
+                                        <GoPencil className="icon-edit" title="Editar Cliente" onClick={handleClienteEditForm} />
+                                        <CiTrash className="icon-delete" title="Deletar Cliente" onClick={() => handleClienteDelete(selectedCliente.id_cliente)} />
                                     </div>
                                 </div>
-                            ) : (
-                                <p>Clique em um cliente para ver os detalhes</p>
-
                             )}
-
-                            {showAddClienteForm ? (
-                                <div>
-                                    <input
-                                        type="text"
-                                        name="nome"
-                                        placeholder="nome"
-                                        className=""
-                                        onChange={handleaddValues}
-                                    />
-                                    <input
-                                        type="number"
-                                        name="telefone"
-                                        placeholder="telefone"
-                                        className=""
-                                        onChange={handleaddValues}
-                                    />
-                                    <input
-                                        type="text"
-                                        name="endereco"
-                                        placeholder="endereço"
-                                        className=""
-                                        onChange={handleaddValues}
-                                    />
-
-                                    <input type="button" value="" />
-                                </div>
-                            ) : (
-                                <h2>2</h2>
-                            )
-
-                            }
+                            {!showAddClienteForm && !isEditing && !selectedCliente && (
+                                <p>Clique em um cliente para ver os detalhes</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -145,4 +169,5 @@ function Clientes() {
         </div>
     );
 }
+
 export default Clientes;

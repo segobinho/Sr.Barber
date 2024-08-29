@@ -47,3 +47,31 @@ h2.cliente-title     {
     color: yellow ;
     font-size: 35px;
 }
+
+/* Estilo dos botões */
+.button-add, .button-save {
+    font-size: 24px;
+    cursor: pointer;
+    background-color: yellow;
+    border: none;
+    color: black;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.button-add:hover, .button-save:hover {
+    background-color: lightyellow;
+}
+
+/* Manter a consistência com a classe cliente-info */
+p {
+    color: yellow;
+}
+
+/* Manter a consistência com a classe cliente-title */
+h2.cliente-title {
+    color: yellow;
+    font-size: 35px;
+}
