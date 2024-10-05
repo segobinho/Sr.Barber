@@ -54,7 +54,7 @@ function Login() {
                     name='password' className="loginInput" onChange={handleInput} />
                     {errors.password && <span className="">{errors.password}</span>}
                     
-                    <button type="submit" className='login-button'>Login</button>
+                    <button type="submit" className='login-button'>Log  in</button>
                 </div>
             </form>
         </div>

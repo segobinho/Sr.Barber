@@ -68,3 +68,37 @@
   .logout-button{
     margin-right: 15px;
   }
+
+  @media (max-width: 768px) { /* Para dispositivos móveis */
+    .header {
+      padding: 0 1vw; /* Reduz padding para telas menores */
+      overflow-x: auto; /* Habilita rolagem horizontal apenas no celular */
+    }
+  
+    .lista ul {
+      flex-wrap: nowrap;
+      overflow-x: auto; /* Habilita rolagem horizontal */
+      white-space: nowrap; /* Impede quebra de linha */
+    }
+  
+    .lista li {
+      font-size: 0.9rem; /* Reduz tamanho da fonte */
+      margin: 0 1vw;
+    }
+  
+    .header-logo img {
+      width: 15vw; /* Aumenta um pouco a imagem em telas menores */
+    }
+  
+    .cargoheader {
+      font-size: 0.8rem; /* Ajusta tamanho do cargo */
+    }
+  
+    .logout-button {
+      font-size: 0.8rem;
+    }
+  
+    .vertical-line {
+      height: 3vh; /* Reduz altura da linha */
+    }
+  }

@@ -227,3 +227,41 @@ margin-top: 4px;
 }
 
 
+@media (max-width: 768px) {
+    .bloco {
+      width: 8rem; /* Ajusta a largura do bloco em telas menores */
+      margin: 0.5rem; /* Ajuste de margem com unidade relativa */
+      font-size: 0.rem; /* Ajuste de tamanho da fonte para melhor legibilidade */
+    }
+    
+    .title > h1 {
+      font-size: 0.9rem; /* Ajuste de tamanho da fonte em telas menores */
+    }
+  
+    .button1 {
+      height: 1.9rem; /* Ajuste de altura do botão em telas menores */
+      margin: 2px;
+    }
+  
+    .pesquisa-input {
+      font-size: 0.875rem; /* Ajuste de tamanho da fonte em telas menores */
+    }
+  
+    .service-header {
+      flex-direction: column; /* Ajusta a direção do layout em telas menores */
+      align-items: flex-start; /* Ajusta o alinhamento em telas menores */
+    }
+  
+    .info {
+      width: 100%; /* Ajusta a largura da info para preencher a tela */
+    }
+    .container1 {
+        margin-top: 10rem;
+        font-size: 1rem;
+    }
+
+    h2.cliente-title3 {
+        color: yellow;
+        font-size: 305px;
+    }
+    }

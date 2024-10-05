@@ -38,10 +38,6 @@
 }
 
 
-p {
-    color: yellow;
-    
-}
 
 h2.cliente-title     {
     color: yellow ;
@@ -71,7 +67,31 @@ p {
 }
 
 /* Manter a consistência com a classe cliente-title */
-h2.cliente-title {
+h2.cliente-title3 {
     color: yellow;
     font-size: 35px;
+}
+
+@media (max-width: 768px) {
+
+
+    h2.cliente-title3 {
+        color: yellow;
+        font-size: 1.3rem;
+    }
+
+    p.cliente-info3 {
+        font-size: 0.1rem;
+    }
+
+    p.clique {
+        margin-bottom: 20rem;
+    }
+
+    .clientep {
+        font-size: 0.7rem;
+    }
+
+    .barbearias-list {
+    }
 }

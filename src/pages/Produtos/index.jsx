@@ -299,52 +299,51 @@ const Products = () => {
                     </form>
 
                     <div className="bloco">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>Código do Produto</th>
-                                    <th>Nome</th>
-                                    <th>Preço</th> {/* Adiciona a coluna para preço */}
-                                    <th>Preço de Venda</th>
-                                    <th>Quantidade</th>
-                                    <th>Data de Vencimento</th>
-                                    <th>Barbearia</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Array.isArray(products) && products.map((product) => (
-                                    <tr key={product.id}>
-                                        <td>{product.barcode}</td>
-                                        <td>{product.name}</td>
-                                        <td>{product.price}</td>
-                                        <td>{product.price}</td> {/* Adiciona o preço aqui */}
-                                        <td>{product.salePrice}</td>
-                                        <td>{product.amount}</td>
-                                        <td>{new Date(product.expirationDate).toISOString().split('T')[0]}</td> {/* Formata a data aqui */}
-                                        <td>{product.barberShopName}</td>
-                                        <td>
-                                            <div className="action">
-                                                <button
-                                                    type="button"
-                                                    className="edit"
-                                                    onClick={() => startEditing(product)}
-                                                >
-                                                    <i className="bi bi-pencil-fill"><GoPencil /></i>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="delete"
-                                                    onClick={() => deleteProduct(product.id)}
-                                                >
-                                                    <i className="bi bi-trash-fill"><CiTrash /></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <table className="table">
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Preço de Venda</th>
+            <th>Quantidade</th>
+            <th>Vencimento</th>
+            <th>Barbearia</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {products.map((product) => (
+            <tr key={product.id}>
+                <td>{product.barcode}</td>
+                <td>{product.name}</td>
+                <td>{product.price}</td>
+                <td>{product.salePrice}</td>
+                <td>{product.amount}</td>
+                <td>{product.expirationDate}</td>
+                <td>{barbearias.nome}</td>
+                <td>
+                    <div className="action">
+                        <button
+                            type="button"
+                            className="edit"
+                            onClick={() => startEditing(product)}
+                        >
+                            <GoPencil />
+                        </button>
+                        <button
+                            type="button"
+                            className="delete"
+                            onClick={() => deleteProduct(product.id)}
+                        >
+                            <CiTrash />
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>
                     </div>
                 </div>
         </div>

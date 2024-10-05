@@ -99,7 +99,7 @@ function Clientes() {
                     <div className="bloco">
                         <div className="title">
                             <h1>Clientes</h1>
-                            <IoIosAddCircleOutline className="button-add" onClick={handleClienteAddForm} />
+                            <IoIosAddCircleOutline className="button1" onClick={handleClienteAddForm} />
                         </div>
                         <hr />
                         <div>
@@ -109,7 +109,6 @@ function Clientes() {
                                         <p className="clientep"><strong>Nome:</strong> {cliente.nome}</p>
                                     </div>
                                     <p className="clientep"><strong>Endereço:</strong> {cliente.endereco}</p>
-                                    <CiTrash className="icon-delete" title="Deletar Cliente" onClick={() => handleClienteDelete(cliente.id_cliente)} />
                                 </div>
                             ))}
                         </div>
@@ -118,7 +117,7 @@ function Clientes() {
                         <div className="container1">
                             {showAddClienteForm && (
                                 <div className="container2">
-                                    <h2 className="cliente-title">{isEditing ? "Editar Cliente" : "Adicionar Cliente"}</h2>
+                                    <h2 className="cliente-title3">{isEditing ? "Editar Cliente" : "Adicionar Cliente"}</h2>
                                     <input
                                         type="text"
                                         name="nome"
@@ -147,8 +146,8 @@ function Clientes() {
                             )}
                             {!showAddClienteForm && !isEditing && selectedCliente && (
                                 <div className="container2">
-                                    <h2 className="cliente-title">Detalhes do Cliente</h2>
-                                    <div className="cliente-info">
+                                    <h2 className="cliente-title3">Detalhes do Cliente</h2>
+                                    <div className="cliente-info3">
                                         <p><strong>Nome:</strong> {selectedCliente.nome}</p>
                                         <p><strong>Endereço:</strong> {selectedCliente.endereco}</p>
                                         <p><strong>Telefone:</strong> {selectedCliente.telefone}</p>
@@ -160,7 +159,7 @@ function Clientes() {
                                 </div>
                             )}
                             {!showAddClienteForm && !isEditing && !selectedCliente && (
-                                <p>Clique em um cliente para ver os detalhes</p>
+                                <p className="clique">Clique em um cliente para ver os detalhes</p>
                             )}
                         </div>
                     </div>

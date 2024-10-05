@@ -5,6 +5,8 @@
 {
   background-image: url('../../assets/Dashboard\ Login\ 2.jpg'); /* Caminho da sua imagem de fundo */
   background-size: cover; /* Cobrir toda a área da viewport */
+  background-position: center; /* Centraliza a imagem */
+
 
 }
 body, html {
@@ -89,4 +91,28 @@ body, html {
 
 .senha {
   margin-top: 20px; /* Diminuir espaço entre o email e o campo de senha */
+}
+@media (max-width: 600px) {
+  .login-box {
+    width: 90%; /* Ajuste a largura da caixa de login para ocupar 90% da tela */
+    padding: 20px; /* Reduza o padding para dispositivos móveis */
+    margin-top: 60px; /* Ajuste a margem superior conforme necessário */
+    margin-right: 0; /* Ajuste a margem direita para dispositivos móveis */
+  }
+
+  .loginInput {
+    font-size: 16px; /* Reduza o tamanho da fonte para inputs em telas menores */
+  }
+
+  .login-button {
+    height: 40px; /* Ajuste a altura do botão para dispositivos móveis */
+    font-size: 16px; /* Ajuste o tamanho da fonte do botão */
+  }
+
+  .circle {
+    width: 50vw; /* Ajuste o tamanho do círculo para se adaptar melhor em telas menores */
+    height: 50vw;
+    bottom: -10%;
+    left: -10%;
+  }
 }

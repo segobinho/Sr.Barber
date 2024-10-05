@@ -1,70 +1,77 @@
 /* Checkout.css */
 
-
+/* Estilos Globais */
 h4 {
-    text-align: center;
+    text-align: left; /* Alinhar o título à esquerda */
     margin-bottom: 20px;
 }
 
 .products-section, .cart-section {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .product-list {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column; /* Mudar para exibir em coluna */
+    gap: 10px;
 }
 
 .product-item {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    width: calc(33.333% - 20px);
+    background-color: transparent; /* Remover o fundo */
+    border: none; /* Remover a borda */
+    padding: 0; /* Remover padding */
+    width: 100%; /* Ocupa a largura total */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .product-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
+    font-size: 16px; /* Ajustar o tamanho da fonte */
+    font-weight: normal; /* Tornar a fonte regular */
+    margin-bottom: 0; /* Remover margem inferior */
 }
 
 .product-price {
-    color: #28a745;
-    margin-bottom: 10px;
+    color: #000; /* Mudar a cor para preto */
+    margin-bottom: 0; /* Remover margem inferior */
 }
 
 .product-quantity-input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
+    width: 60px; /* Ajustar a largura */
+    padding: 5px; /* Ajustar o padding */
+    border: 1px solid #ddd; /* Bordas sutis */
     border-radius: 4px;
 }
 
 .cart-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
+    background-color: #f1f1f1; /* Cor de fundo clara */
+    border: 1px solid #ddd; /* Borda sutil */
     padding: 10px;
     border-radius: 8px;
-    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .cart-item-name {
-    font-weight: bold;
+    font-weight: normal; /* Tornar a fonte regular */
+    font-size: 14px; /* Diminuir o tamanho da fonte */
 }
 
 .cart-item-total {
-    color: #dc3545;
+    color: #000; /* Cor preta para o total */
+    font-weight: bold; /* Tornar o total em negrito */
 }
 
 .cart-total {
-    font-size: 20px;
-    margin-top: 20px;
+    font-size: 18px; /* Ajustar o tamanho da fonte */
+    font-weight: bold; /* Tornar o total em negrito */
+    margin-top: 10px;
 }
 
 .btn-success {
-    background-color: #28a745;
+    background-color: #28a745; /* Verde */
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -74,4 +81,17 @@ h4 {
 
 .btn-success:hover {
     background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Vermelho */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
 }
