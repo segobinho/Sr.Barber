@@ -1,46 +1,63 @@
-import express from "express";
-import { getUsers, getServiceById, updateService, deleteService, addService, getBarbearias } from "../controllers/user.js";
-import { testesla } from "../controllers/testando.js";
-import {getFuncionarios, addFuncionario,  editFuncionario, removeFuncionario} from "../controllers/funcionarios.js"
-import { getClientes, addClientes, editCliente, removeCliente } from "../controllers/clientes.js";
-import { getProducts, addProduct, editProduct, deleteProduct } from '../controllers/productController.js';
-import { addAgendamentos, getAgendamentos, moverAgendamento } from "../controllers/agendamentos.js";
+    import express from "express";
+    import multer from "multer";
+    import { getUsers, getServiceById, updateService, deleteService, addService, getBarbearias } from "../controllers/user.js";
+    import { testesla } from "../controllers/testando.js";
+    import {getFuncionarios, addFuncionario,  editFuncionario, removeFuncionario, getBarbeiros, getFuncionarioById, uploadImage } from "../controllers/funcionarios.js"
+    import { getClientes, addClientes, editCliente, removeCliente } from "../controllers/clientes.js";
+    import { getProducts, addProduct, editProduct, deleteProduct } from '../controllers/productController.js';
+    import { addAgendamentos, atualizarAgendamento, getAgendamentos, moverAgendamento, removeAgendamento } from "../controllers/agendamentos.js";
+    import { Grafico } from "../controllers/graficos.js";
+    import { storage } from "../multerconfig.js";
+    const upload = multer({ storage: storage });
 
 
 
-const router = express.Router();
+    const router = express.Router();
 
-router.get("/", getUsers);
-router.get("/se", getUsers);
-router.get("/service/:id", getServiceById);
-router.put("/service/:id", updateService);
-router.delete("/service/:id_servico", deleteService);
-router.post("/service", addService);
-router.post("/login", testesla);
-router.get("/barbearias", getBarbearias);
-router.get("/clientes", getClientes);
-router.post("/add", addClientes)
-router.put("/clientes/:id_cliente", editCliente);
-router.delete("/clientes/:id_cliente", removeCliente);
+    router.get("/", getUsers);
+    router.get("/se", getUsers);
+    router.get("/service/:id", getServiceById);
+    router.put("/service/:id", updateService);
+    router.delete("/service/:id_servico", deleteService);
+    router.post("/service", addService);
+    router.post("/login", testesla);
+    router.get("/barbearias", getBarbearias);
+    router.get("/clientes", getClientes);
+    router.post("/add", addClientes)
+    router.put("/clientes/:id_cliente", editCliente);
+    router.delete("/clientes/:id_cliente", removeCliente);
 
-router.get("/funcionarios", getFuncionarios);
-router.post("/funcionarios", addFuncionario);
-router.put("/funcionarios/:id_funcionario", editFuncionario);
-router.delete("/funcionarios/:id_funcionario", removeFuncionario);
+    router.get("/funcionarios", getFuncionarios);
+    router.get("/funcionariosByID/:id_funcionario", getFuncionarioById);
 
-router.get('/products', getProducts);
-router.post('/products', addProduct);
-router.put('/products/:id', editProduct);
-router.delete('/products/:id', deleteProduct);
+    router.post("/funcionarios", addFuncionario);
+    router.put("/funcionarios/:id_funcionario", upload.single("file"), editFuncionario);
+    router.delete("/funcionarios/:id_funcionario",  removeFuncionario);
+    router.post("/upload", upload.single("file"), uploadImage);
 
 
-router.post('/agendamentos', addAgendamentos);
-router.get('/agendamentos', getAgendamentos);
-router.put('/mover/:id_agendamento', moverAgendamento)
+    router.get("/barbeiros", getBarbeiros)
+
+    router.get('/products', getProducts);
+    router.post('/products', addProduct);
+    router.put('/products/:id', editProduct);
+    router.delete('/products/:id', deleteProduct);
+
+
+    router.post('/agendamentos', addAgendamentos);
+    router.get('/agendamentos', getAgendamentos);
+    router.put('/mover/:id', moverAgendamento)
+    router.delete('/agendamentos/:id', removeAgendamento)
+    router.put('/agendamentos/:id', atualizarAgendamento)
+
+    router.get("/teste123", Grafico)
 
 
 
 
 
 
-export default router;
+
+
+
+    export default router;

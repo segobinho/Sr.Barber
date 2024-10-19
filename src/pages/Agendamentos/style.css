@@ -1,3 +1,15 @@
+:root {
+  --cor1: #FFD369; /* Primária */
+  --cor2: #BD9E54; /* Secundária */
+  --cor3: #8C8C8C; /* Neutros */
+  --cor4: #222831; /* Fundo de cabeçalhos */
+  --cor5: #161717; /* Elementos escuros */
+  --cor6: #000000; /* Texto e sombras */
+  --cor7: #ffffff;
+}
+
+
+
 .Agenda{
   height: 94.5vh;
 }
@@ -12,7 +24,7 @@
 
 .rbc-toolbar{
   height: 10hv;
-  color: #bbb;
+  color: var(--cor1); 
   font-size: 25px
 }
 
@@ -21,14 +33,14 @@
 }
 
 .rbc-toolbar button{
-  color: #cecece;
-  border: 1px solid #cccccc4f;
+  color: var(--cor2);
+  border: 1px solid var(--cor3);
 }
 
 .rbc-toolbar button:active, 
 .rbc-toolbar button.rbc-active{
-  background-color: #56565686;
-  border-color: #bbb;
+  background-color:  var(--cor5);
+  border-color: var(--cor3);
 }
 
 /* corpo */
@@ -78,7 +90,7 @@
  }
  
  .rbc-now .rbc-button-link{
-  background-color: #f15550;
+  background-color: red;
   color: white;
   border-radius: 2px;
   padding-left: 2px;
@@ -141,4 +153,12 @@
   color: #333;
 }
 
+
+.rbc-current-time-indicator {
+  background-color: var(--cor1); /* Muda a cor da linha verde para vermelho */
+}
+
+.rbc-time-content {
+  background-color: #1c1c1c; /* Cor de fundo escura para a área branca */
+}
 

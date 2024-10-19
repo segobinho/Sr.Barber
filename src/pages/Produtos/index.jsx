@@ -4,6 +4,7 @@ import Header from '../../components/header/index';
 import { GoPencil } from "react-icons/go";
 import { CiTrash } from "react-icons/ci";
 import useGetData from "../../hooks/Alldata/Getdata";
+import FiltroBusca from '../../components/filltro/inndex';
 
 const Products = () => {
     const [form, setForm] = useState({
@@ -25,6 +26,8 @@ const Products = () => {
     const [filterActive, setFilterActive] = useState(false);
     const [user, setUser] = useState([]);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [produtosFiltrados, setProdutosFiltrados] = useState(products);
+
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -96,27 +99,7 @@ const Products = () => {
         }
     };
 
-    const searchProducts = (e) => {
-        e.preventDefault();
-        const filteredProducts = allProducts.filter((product) => {
-            const matchesBarcode = product.barcode.includes(searchBarcode);
-            const matchesName = product.name.toLowerCase().includes(searchName.toLowerCase());
-            const matchesBarbearia = searchIdBarbearia ? product.id_barbearia === parseInt(searchIdBarbearia) : true;
-
-            return matchesBarcode && matchesName && matchesBarbearia;
-        });
-
-        setProducts(filteredProducts);
-        setFilterActive(true);
-    };
-
-    const clearFilter = () => {
-        setFilterActive(false);
-        setSearchBarcode("");
-        setSearchName("");
-        setSearchIdBarbearia("");
-        setProducts(allProducts);
-    };
+  
 
     const startEditing = (product) => {
         setEditingProduct(product);
@@ -143,6 +126,7 @@ const Products = () => {
             id_barbearia: ""
         });
     };
+    console.log(products)
 
     return (
         <div className="content">
@@ -253,53 +237,14 @@ const Products = () => {
                         </div>
                     </form>
 
-                    <h4>Listagem de Produtos</h4>
-                    <form className="search" onSubmit={searchProducts}>
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Código do produto"
-                            name="searchBarcode"
-                            value={searchBarcode}
-                            onChange={(e) => setSearchBarcode(e.target.value)}
-                        />
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Nome do produto"
-                            name="searchName"
-                            value={searchName}
-                            onChange={(e) => setSearchName(e.target.value)}
-                        />
-                        <select
-                            className="form-control"
-                            name="searchIdBarbearia"
-                            value={searchIdBarbearia}
-                            onChange={(e) => setSearchIdBarbearia(e.target.value)}
-                        >
-                            <option value="">Todas as barbearias</option>
-                            {barbearias.map((barbearia) => (
-                                <option key={barbearia.id_barbearia} value={barbearia.id_barbearia}>
-                                    {barbearia.nome}
-                                </option>
-                            ))}
-                        </select>
-                        <button className="btn btn-primary" type="submit">
-                            Buscar
-                        </button>
-                        {filterActive && (
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={clearFilter}
-                            >
-                                Limpar Filtro
-                            </button>
-                        )}
-                    </form>
+                   
+                        
+                    <FiltroBusca itens={products} onFiltrar={setProdutosFiltrados} placeholder='buscar produtos' />
+
 
                     <div className="bloco">
                     <table className="table">
+                        
     <thead>
         <tr>
             <th>Código</th>
@@ -313,7 +258,9 @@ const Products = () => {
         </tr>
     </thead>
     <tbody>
-        {products.map((product) => (
+
+
+        {produtosFiltrados.map((product) => (
             <tr key={product.id}>
                 <td>{product.barcode}</td>
                 <td>{product.name}</td>

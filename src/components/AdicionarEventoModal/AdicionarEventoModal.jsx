@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import useGetData from '../../hooks/Alldata/Getdata';
+import moment from 'moment';
+import './style.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 
 const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
@@ -29,7 +35,7 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
     // Função para buscar os serviços do backend
     const fetchServicos = async () => {
       try {
-        const servicosResponse = await axios.get('http://localhost:8800/clientes');
+        const servicosResponse = await axios.get('http://localhost:8800/se');
         setServicos(servicosResponse.data); // Atualiza o estado com os dados dos serviços
       } catch (error) {
         console.error('Erro ao buscar serviços:', error);
@@ -45,35 +51,44 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
     e.preventDefault();
     
     if(dataInicio >= dataFim){
-      alert('A data início deve ser anterior à data de término');
+      toast.warning('data fim não pode ser anterior a data de inicio !');
       return;
   }
 
+  
+
     try {
       const novoEvento = {
-        title: `${servicoSelecionado} - ${clienteSelecionado}`, // Exibir serviço e cliente no título
+        title: `${titulo} `, // Exibir serviço e cliente no título
         start: new Date(dataInicio),
         end: new Date(dataFim),
         resourceId: barberId,
         id_cliente: clienteSelecionado, // ID do cliente
         id_servico: servicoSelecionado, // ID do servi
       };
+      console.log(novoEvento)
+      console.log(clienteSelecionado)
 
       // Faz o POST para o backend (substitua pela URL correta)
       await axios.post('http://localhost:8800/agendamentos', novoEvento);
+      
 
       // Atualiza o estado de eventos com o novo evento
       setEventos([...eventos, novoEvento]);
 
-      // Fecha o modal
+  
       onClose();
     } catch (error) {
       console.error('Erro ao adicionar evento:', error);
+     
     }
   };
+  
 
   return (
     <div className='modal'>
+      <ToastContainer />
+
       <div className='modal-content'>
         <h2>Adicionar Evento para Barbeiro</h2>
         <form onSubmit={handleSubmit}>
@@ -86,7 +101,7 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
             >
               <option value="">Selecione um cliente</option>
               {clientes.map((cliente) => (
-                <option key={cliente.id_cliente} value={cliente.nome}>
+                <option key={cliente.id_cliente} value={cliente.id_cliente}>
                   {cliente.nome}
                 </option>
               ))}
@@ -101,7 +116,7 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
             >
               <option value="">Selecione um serviço</option>
               {servicos.map((servico) => (
-                <option key={servico.id} value={servico.nome}>
+                <option key={servico.id} value={servico.id_servico}>
                   {servico.nome}
                 </option>
               ))}
@@ -134,8 +149,8 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
               required
             />
           </div>
-          <button type='submit'>Adicionar Evento</button>
-          <button type='button' onClick={onClose}>Cancelar</button>
+          <button className='save-btn' type='submit'>Adicionar Evento</button>
+          <button className='delete-btn' type='button' onClick={onClose}>Cancelar</button>
         </form>
       </div>
     </div>

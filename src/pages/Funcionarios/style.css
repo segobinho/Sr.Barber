@@ -13,7 +13,7 @@
   justify-content: center;
   text-align: center;
   height: 100%;
-  margin-bottom: 500px;
+  margin-bottom: 40vh;
 
 }
 .cliente-title {
@@ -109,6 +109,5 @@ h2.cliente-title {
       font-size: 0.7rem;
   }
 
-  .barbearias-list {
-  }
+  
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,} from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import axios from 'axios';
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -6,9 +6,12 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'; // Importar os estilos para o Drag and Drop
 import 'moment/locale/pt-br'; // Importa o idioma português
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 import './style.css';
-import EventosPadrao from './Eventos';
+import EventoPsadrao from './Eventos';
 import EventModal from '../../components/EventModal';
 import CustomToolbar from './CustomToolbar';
 import Adicionar from '../../components/Adicionar/Adicionar';
@@ -46,6 +49,10 @@ function Agenda() {
   const [showAddEventModal, setShowAddEventModal] = useState(false); // Estado para controlar o modal
   const [selectedBarber, setSelectedBarber] = useState(null); // Estado para armazenar o barbeiro selecionado
   const [user, setUser] = useState([]);
+  const [services, Setservices] =useState([])
+  console.log("Estado resources atualizado:", resources);
+
+  
 
 
 
@@ -68,8 +75,8 @@ function Agenda() {
         const formattedEvents = data.map((event) => ({
           ...event,
           id: event.id_agendamento, // Mapeia 'id_agendamento' para 'id'
-          start: new Date(event.start),
-          end: new Date(event.end),
+          start: moment(event.start, 'YYYY-MM-DD HH:mm:ss').toDate(),
+          end: moment(event.end, 'YYYY-MM-DD HH:mm:ss').toDate(),
           resourceId: event.id_funcionario,
           
         }));
@@ -81,6 +88,7 @@ function Agenda() {
     };
 
     fetchData();
+   
   }, []); // Usa userRef.current como dependência
   
 
@@ -91,7 +99,7 @@ function Agenda() {
       if (event.id === data.event.id) {
         return {
           ...event,
-          start: new Date(start),
+          start: new Date(start), 
           end: new Date(end),
         };
       }
@@ -108,7 +116,9 @@ function Agenda() {
         end: moment(end).format('YYYY-MM-DD HH:mm:ss'),
 
       });
-      console.log('Evento atualizado no banco de dados com sucesso');
+      console.log(data.event.id);
+      console.log(start);
+      console.log(end);
     } catch (error) {
       console.error('Erro ao atualizar o evento no banco de dados:', error);
     }
@@ -120,11 +130,47 @@ function Agenda() {
     
   }
 
-  
-
   const handleEventClose = () => {
     setevetosSelected(null)
   }
+
+  const handleEventUpdate = async (updatedEvent) => {
+    try {
+      // Fazendo a requisição para atualizar o evento no banco de dados
+      await axios.put(`http://localhost:8800/agendamentos/${updatedEvent.id}`, {
+        title: updatedEvent.title,
+        start: moment(updatedEvent.start).format('YYYY-MM-DD HH:mm:ss'),
+        end: moment(updatedEvent.end).format('YYYY-MM-DD HH:mm:ss'),
+        id_funcionario: updatedEvent.id_funcionario, // Atualizando o barbeiro selecionado
+        id_cliente: updatedEvent.id_cliente,
+        id_servico: updatedEvent.id_servico,
+      });
+
+      console.log('Erro ao receberr :', updatedEvent)
+  
+      // Atualizando o estado local com o evento modificado
+      const updatedEvents = eventos.map((event) => {
+        if (event.id === updatedEvent.id) {
+          return updatedEvent; // Substitui o evento atualizado
+        }
+        return event;
+      });
+      setEventos(updatedEvents); // Atualiza o estado com os eventos modificados
+      setevetosSelected(null);   // Fecha o modal após salvar as alterações
+      toast.success('Evento editado com sucesso!');
+
+    } catch (error) {
+      console.error('Erro ao atualizar o evento no banco de dados:', error);
+    }
+  };
+  
+const handleEventDelete = (eventId) => {
+  
+    axios.delete(`http://localhost:8800/agendamentos/${eventId}`);
+    setevetosSelected(null);
+
+};
+
 
   const eventStyle = (event) => ({
     style: {
@@ -141,22 +187,50 @@ function Agenda() {
     // Função para buscar os barbeiros da API
     const fetchBarbers = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/funcionarios'); // Substitua pela sua URL da API
-        console.log(response.data)  
-
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const { cargo, id_barbearia } = userData; // Obtenha o cargo e o id_barbearia
+        console.log(userData)
+  
+        const response = await axios.get('http://localhost:8800/funcionarios', {
+          params: {
+            cargo: cargo,            // Enviar o cargo como parâmetro
+            id_barbearia: id_barbearia // Enviar o id_barbearia como parâmetro
+          },
+        });
+  
+        console.log(response.data);  
+  
         const barbersData = response.data.map(barber => ({
           id: barber.id_funcionario,
           title: barber.nome,
-          img: `http://localhost:8800${barber.imagens}` // Supondo que a imagem esteja neste campo
+          img: `http://localhost:8800/fotos/${barber.imagens}` // Supondo que a imagem esteja neste campo
         }));
         setResources(barbersData); // Atualiza o estado com os dados dos barbeiros
       } catch (error) {
         console.error('Erro ao buscar barbeiros:', error);
       }
     };
-
+  
     fetchBarbers(); // Chama a função ao montar o componente
   }, []);
+  
+
+  useEffect(() => {
+    // Função para buscar os barbeiros da API
+    const fetchse = async () => {
+      try {
+        const response = await axios.get('http://localhost:8800/se'); // Substitua pela sua URL da API
+        console.log(response.data)  
+        Setservices(response.data); // Define o estado com os dados da API
+
+      } catch (error) {
+        console.error('Erro ao buscar barbeiros:', error);
+      }
+    };
+
+    fetchse(); // Chama a função ao montar o componente
+  }, []);
+
 
 
   return (
@@ -164,6 +238,7 @@ function Agenda() {
     <div className='tela'>
       
 <Header/>
+<ToastContainer />
       <div className='calendario'>
         <DragAndDropCalendar
           defaultDate={moment().toDate()}
@@ -200,7 +275,10 @@ function Agenda() {
         <EventModal
           evento={eventosSelected}
           onClose={handleEventClose}
+          onDelete={handleEventDelete}
+          onUpdate={handleEventUpdate}
           barbeiros={resources}
+          servicos={services}
         />
       )}
       {showAddEventModal && (

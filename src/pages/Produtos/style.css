@@ -1,14 +1,23 @@
-/* Estilos Gerais */
+
+:root {
+    --cor1: #FFD369; /* Primária */
+    --cor2: #BD9E54; /* Secundária */
+    --cor3: #8C8C8C; /* Neutros */
+    --cor4: #222831; /* Fundo de cabeçalhos */
+    --cor5: #161717; /* Elementos escuros */
+    --cor6: #000000; /* Texto e sombras */
+    --cor7: #ffffff;
+}
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: grey;
     margin: 0;
     padding: 0;
 }
 
 h4 {
     margin-bottom: 20px;
-    color: #333;
+    color: var(--cor1);
 }
 
 /* Estilo do Bloco de Cadastro */
@@ -29,7 +38,7 @@ main {
     display: flex;
     flex-direction: column;
     padding: 5%;
-    background-color: #f8f9fa;
+    background-color: var(--cor4);
     box-sizing: border-box;
     overflow-y: auto;
 }
@@ -56,13 +65,13 @@ main {
     margin-bottom: 5px;
     display: block;
     font-weight: bold;
-    color: #333;
+    color: var(--cor2);
 }
 
 .form-control {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--cor6);
     border-radius: 4px;
     margin-bottom: 10px;
     box-sizing: border-box;
@@ -77,24 +86,24 @@ main {
 }
 
 .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: #fff;
+    background-color: var(--cor1);
+    border-color: var(--cor1);
+    color: var(--cor3);
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: var(--cor2);
 }
 
 .btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: #fff;
+    background-color:  var(--cor1);
+    border-color:  var(--cor1);
+    color: var(--cor3);
     margin-left: 10px;
 }
 
 .btn-secondary:hover {
-    background-color: #5a6268;
+    background-color: var(--cor2);
 }
 
 /* Estilo da Listagem de Produtos */
@@ -105,18 +114,22 @@ main {
 }
 
 .table thead {
-    background-color: #007bff;
-    color: #fff;
+    background-color: var(--cor1);
+    color: var(--cor3);
 }
 
 .table th,
 .table td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border: 1px solid var(--cor7);
     box-sizing: border-box;
+    
+    
 }
-
+.table td {
+    background-color: var(--cor2);
+}
 .table tbody tr:hover {
     background-color: #f1f1f1;
 }

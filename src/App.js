@@ -13,6 +13,7 @@ import Produtos from './pages/Produtos';
 import NotFound from './pages/NotFound';
 import Barbearias from './pages/barbearias/index';
 import Checkout from './pages/chekout';
+import Configuracoes from './pages/configuracoes';
 
 
 
@@ -35,6 +36,8 @@ function App() {
         <Route path='/home' element={<Home/>}></Route>
         <Route path='/Produtos' element={<Produtos/>}></Route>
         <Route path='/check' element={<Checkout />}></Route>
+        <Route path='/config' element={<Configuracoes />}></Route>
+
         </Route>
         <Route element={<ProtectedRoutes allowedRoles={['admin']} />}>
         <Route path='/Barbearias' element={<Barbearias/>}></Route>

@@ -13,7 +13,9 @@ export const testesla = (req, res) => {
         return res.json({
             status: "Sucesso",
             cargo: data[0].cargo,
-            id_barbearia: data[0].id_barbearia
+            id_barbearia: data[0].id_barbearia,
+            id_funcionario: data[0].id_funcionario // Inclui o id do funcionário
+
         });
        }else {
         return res.json("fail");

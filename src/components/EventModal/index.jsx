@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css'; // Import the CSS file for styling
 
-const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros }) => {
+const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros, servicos}) => {
   const [editedEvent, setEditedEvent] = useState({ ...evento });
   const [collapsed, setCollapsed] = useState(true);
   const [barbeiroSelecionado, setBarbeiroSelecionado] = useState(evento.id_funcionario || ''); // Inicializa com o barbeiro do evento
+  const [servicoSelecionado, setservicoSelecionado] = useState(evento.id_servico || ''); // Inicializa com o barbeiro do evento
 
+
+  console.log('Barbeiros:', barbeiros);
+  console.log('Evento:', evento);
+  console.log('editado:', editedEvent);
+  console.log('receba', barbeiroSelecionado);
+  
+
+  useEffect(() => {
+    setEditedEvent((prevState) => ({
+      ...prevState,
+      id_funcionario: barbeiroSelecionado, // Atualiza id_funcionario no evento editado
+    }));
+  }, [barbeiroSelecionado]); // Executa o efeito quando barbeiroSelecionado mudar
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +51,8 @@ const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros }) => {
   const handleUpdate = () => {
     const updatedEvent = {
       ...editedEvent,
-      id_funcionario: barbeiroSelecionado, // Adiciona o barbeiro selecionado ao evento
+      id_funcionario: barbeiroSelecionado,
+      id_servico: servicoSelecionado,// Adiciona o barbeiro selecionado ao evento
     };
     onUpdate(updatedEvent);
     onClose();
@@ -81,6 +96,22 @@ const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros }) => {
                 ))}
               </select>
             </div>
+
+            <div className='form-group'>
+              <label>Serviço:</label>
+              <select
+                value={servicoSelecionado}
+                onChange={(e) => setservicoSelecionado(e.target.value)}
+                required
+              >
+                <option value="">Selecione um serviço</option>
+                {servicos.map((servico) => (
+                  <option key={servico.id_servico} value={servico.id_servico}>
+                    {servico.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
             {!collapsed && (
               <div>
                 <div className='form-group'>
@@ -94,10 +125,6 @@ const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros }) => {
                 <div className='form-group'>
                   <label>Cor</label>
                   <input type='color' name='color' value={editedEvent.color} onChange={handleColorChange} />
-                </div>
-                <div className='form-group'>
-                  <label>Tipo</label>
-                  <input type='text' name='tipo' value={editedEvent.tipo} onChange={handleInputChange} />
                 </div>
               </div>
             )}

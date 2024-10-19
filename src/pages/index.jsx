@@ -7,12 +7,12 @@ import Modal from '../components/modal/index';
 import './style.css';
 import useFetchServices from "../components/FetchAllData/index";
 import axios from "axios";
-import { toast} from "react-toastify";
+import { toast } from "react-toastify";
 import { IoIosAddCircleOutline } from "react-icons/io";
 
 
 function Receba() {
-    const { services, setServices,  setFilteredServices } = useFetchServices("http://localhost:8800/se");
+    const { services, setServices, setFilteredServices } = useFetchServices("http://localhost:8800/se");
     const [selectedService, setSelectedService] = useState(null);
     const [editMode, setEditMode] = useState(false);
     const [formData, setFormData] = useState({ nome: '', duracao: '', preco: '', id_barbearia: '' });
@@ -165,13 +165,13 @@ function Receba() {
                     <div className="bloco">
                         <div className="title">
                             <h1>Serviços</h1>
-                          
-                                <IoIosAddCircleOutline className="button1" onClick={() => setShowAddModal(true)} />
-                                
 
-                            
+                            <IoIosAddCircleOutline className="button1" onClick={() => setShowAddModal(true)} />
+
+
+
                         </div>
-                     
+
                         <Modal
                             show={showAddModal}
                             onClose={() => setShowAddModal(false)}
@@ -183,22 +183,22 @@ function Receba() {
                         />
                         <hr />
                         <div className="service-list">
-                        {services.map((item, i) => (
-    <div key={item.id_servico} className="service-item-container">
-        <div className="service-item" >
-            <div className="service-header">
-                <div onClick={() => handleServiceClick(item.id_servico)}>
-                <h1>{item.nome}</h1>
-                </div>
-                <div className="icon-container">
-                    <CiTrash className="icon-delete" onClick={() => handleDelete(item.id_servico)} />
-                    <GoPencil className="icon-edit" onClick={() => handleEditService(item.id_servico)} />
-                </div>
-            </div>
-            <p>{item.barbearia_endereco}</p>
-        </div>
-    </div>
-))}
+                            {services.map((item, i) => (
+                                <div key={item.id_servico} className="service-item-container">
+                                    <div className="service-item" >
+                                        <div className="service-header">
+                                            <div onClick={() => handleServiceClick(item.id_servico)}>
+                                                <h1>{item.nome}</h1>
+                                            </div>
+                                            <div className="icon-container">
+                                                <CiTrash className="icon-delete" onClick={() => handleDelete(item.id_servico)} />
+                                                <GoPencil className="icon-edit" onClick={() => handleEditService(item.id_servico)} />
+                                            </div>
+                                        </div>
+                                        <p>{item.barbearia_endereco}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
@@ -224,24 +224,24 @@ function Receba() {
                                                 value={formData.duracao}
                                                 onChange={handleFormInputChange}
                                             />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Preço:</label>
-                                        <input
-                                            type="text"
-                                            name="preco"
-                                            value={formData.preco}
-                                            onChange={handleFormInputChange}
-                                        />
-                                    </div>
-                                   
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Preço:</label>
+                                            <input
+                                                type="text"
+                                                name="preco"
+                                                value={formData.preco}
+                                                onChange={handleFormInputChange}
+                                            />
+                                        </div>
+
                                         <input
                                             type="button"
                                             value="Atualizar"
                                             onClick={handleUpdateService}
                                         />
-                                    
-                                </div>
+
+                                    </div>
                                 ) : (
                                     <>
                                         <div className="serviço">
@@ -262,9 +262,9 @@ function Receba() {
                     </div>
                 </div>
             </Main>
-           
+
         </div>
-    );  
+    );
 }
 
 export default Receba;

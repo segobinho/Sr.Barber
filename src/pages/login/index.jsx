@@ -26,7 +26,7 @@ function Login() {
             .then(res => {
                 if(res.data.status === "Sucesso") {
                     // Armazena o email e o cargo do usuário no localStorage
-                    localStorage.setItem('user', JSON.stringify({ email: values.email, cargo: res.data.cargo,  id_barbearia: res.data.id_barbearia}));
+                    localStorage.setItem('user', JSON.stringify({ email: values.email, cargo: res.data.cargo,  id_barbearia: res.data.id_barbearia, id_funcionario: res.data.id_funcionario }));
 
                     navigate('/Home');
                 } else {

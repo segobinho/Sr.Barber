@@ -61,8 +61,7 @@ function Header() {
           <div className='cargoheader'><p>{user.cargo}</p></div>
           <div className='vertical-line'></div>
           <button className="logout-button" onClick={handleLogout}>Logout</button> {/* Botão de Logout */}
-          <i className="gear"><FaGear /></i>
-        </div>
+          <i className="gear" onClick={() => handleNavigate('/config')}><FaGear /></i>        </div>
       </header>  
     );
 }

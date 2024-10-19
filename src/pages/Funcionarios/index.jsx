@@ -24,7 +24,30 @@ function Funcionarios() {
     }, []);
 
 
-    useGetData('http://localhost:8800/funcionarios', user, setFuncionarios);
+    useEffect(() => {
+        // Obtém o usuário do localStorage
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+        console.log(userData.cargo);
+        console.log(user.cargo);
+
+
+        if (userData) {
+            // Faz a requisição para buscar os clientes
+            axios.get('http://localhost:8800/funcionarios', {
+                params: {
+                    cargo: userData.cargo,
+                    id_barbearia: userData.id_barbearia  // Corrigido aqui
+                }
+            })
+                .then(response => {
+                    setFuncionarios(response.data);  // Define os clientes com os dados da resposta
+                })
+                .catch(error => {
+                    console.error("Erro ao buscar clientes:", error);
+                });
+        }
+    }, []);  // Executa apenas uma vez, ao montar o componente
 
 
     const handleAddValues = (event) => {
@@ -110,7 +133,7 @@ function Funcionarios() {
                     <div className="bloco">
                         <div className="title">
                             <h1>Funcionários</h1>
-<IoIosAddCircleOutline className="button1" onClick={handleFuncionarioAddForm} />
+                            <IoIosAddCircleOutline className="button1" onClick={handleFuncionarioAddForm} />
                         </div>
                         <hr />
                         <div>
@@ -160,9 +183,14 @@ function Funcionarios() {
                                 <div className="container2">
                                     <h2 className="funcionario-title">Detalhes do Funcionário</h2>
                                     <div className="funcionario-info">
+                                    <img alt="Foto do Perfil" className="profile-photo"
+                                src={`http://localhost:8800/fotos/${selectedFuncionario.imagens}`}
+                            />
                                         <p><strong>Nome:</strong> {selectedFuncionario.nome}</p>
                                         <p><strong>Cargo:</strong> {selectedFuncionario.cargo}</p>
                                         <p><strong>Telefone:</strong> {selectedFuncionario.telefone}</p>
+                                        <p> <strong>cpf:</strong >{selectedFuncionario.cpf}</p>
+                                        
                                     </div>
                                     <div className="icon-container">
                                         <GoPencil className="icon-edit" title="Editar Funcionário" onClick={handleFuncionarioEditForm} />
