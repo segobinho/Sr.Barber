@@ -1,0 +1,69 @@
+:root {
+    --cor1: #FFD369;
+    --cor2: #BD9E54;
+    --cor3: #8C8C8C;
+    --cor4: #222831;
+    --cor5: #161717;
+    --cor6: #000000;
+
+}
+
+
+.containerr {
+    display: grid;
+    grid-template-columns: 1fr; /* Uma coluna */
+    gap: 20px; /* Espaçamento entre os gráficos */
+    }
+
+.chart {
+    max-width: 600px; /* Largura máxima dos gráficos */
+    background-color: #f4f4f4; /* Cor de fundo dos cards */
+    border: 1px solid #ccc; /* Borda dos cards */
+    border-radius: 8px; /* Bordas arredondadas */
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+    text-align: center; /* Centraliza o texto dentro do card */
+    background-color: var(--cor5);
+
+}
+.chart-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Cria três colunas de largura igual */
+    gap: 20px; /* Espaço entre os gráficos */
+    width: 100%; /* Garante que a largura do contêiner dos gráficos ocupe 100% do espaço disponível */
+}
+
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Cria duas colunas de largura igual */
+    gap: 20px; /* Espaço entre os cards */
+    margin-bottom: 20px; /* Espaço entre os cards e os gráficos */
+
+    
+}
+
+.card {
+    background-color: #f4f4f4; /* Cor de fundo dos cards */
+    border: 1px solid #ccc; /* Borda dos cards */
+    border-radius: 8px; /* Bordas arredondadas */
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
+    text-align: center; /* Centraliza o texto dentro do card */
+    background-color: var(--cor5);
+}
+
+.pcard {
+    color: var(--cor2);
+}
+.hcard{
+    color: var(--cor1);
+}
+
+.charts {
+    background-color: var(--cor5);
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); /* Cria duas colunas de largura igual */
+    width: 100%; /* Garante que a largura do contêiner dos gráficos ocupe 100% do espaço disponível */
+
+}

@@ -6,8 +6,9 @@
     import { getClientes, addClientes, editCliente, removeCliente } from "../controllers/clientes.js";
     import { getProducts, addProduct, editProduct, deleteProduct } from '../controllers/productController.js';
     import { addAgendamentos, atualizarAgendamento, getAgendamentos, moverAgendamento, removeAgendamento } from "../controllers/agendamentos.js";
-    import { Grafico } from "../controllers/graficos.js";
+    import { Grafico, quantservicos, receita, metodos, barbersdata, quantprodutos} from "../controllers/graficos.js";
     import { storage } from "../multerconfig.js";
+import { getCarrinhos } from "../controllers/compras.js";
     const upload = multer({ storage: storage });
 
 
@@ -51,6 +52,17 @@
     router.put('/agendamentos/:id', atualizarAgendamento)
 
     router.get("/teste123", Grafico)
+    router.get("/quantservicos", quantservicos)
+    router.get("/quantprodutos", quantprodutos)
+    router.get("/receita", receita)
+    router.get("/metodos", metodos)
+    router.get("/bdata", barbersdata)
+
+
+
+
+
+    router.get("/carrinhos", getCarrinhos)
 
 
 
