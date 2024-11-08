@@ -13,12 +13,13 @@
     display: grid;
     grid-template-columns: 1fr; /* Uma coluna */
     gap: 20px; /* Espaçamento entre os gráficos */
+    background-color: var(--cor4);
     }
 
 .chart {
-    max-width: 600px; /* Largura máxima dos gráficos */
+    max-width:1210px; /* Largura máxima dos gráficos */
     background-color: #f4f4f4; /* Cor de fundo dos cards */
-    border: 1px solid #ccc; /* Borda dos cards */
+    margin: 5px;
     border-radius: 8px; /* Bordas arredondadas */
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra para dar profundidade */
@@ -28,7 +29,8 @@
 }
 .chart-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Cria três colunas de largura igual */
+    grid-template-columns: 3fr auto; /* O primeiro gráfico ocupa 3 partes e o segundo ocupa 1 parte */
+    margin: 5px;
     gap: 20px; /* Espaço entre os gráficos */
     width: 100%; /* Garante que a largura do contêiner dos gráficos ocupe 100% do espaço disponível */
 }
@@ -64,6 +66,9 @@
     background-color: var(--cor5);
     display: grid;
     grid-template-columns: repeat(1, 1fr); /* Cria duas colunas de largura igual */
-    width: 100%; /* Garante que a largura do contêiner dos gráficos ocupe 100% do espaço disponível */
+    width: 590px; /* Garante que a largura do contêiner dos gráficos ocupe 100% do espaço disponível */
+    margin-right: 20px;
+    border-radius: 8px; /* Bordas arredondadas */
+
 
 }

@@ -25,20 +25,71 @@ export const getAgendamentos = (_, res) => {
 
 
 export const addAgendamentos = (req, res) => {
-    const { title, start, end, resourceId, id_cliente, id_servico } = req.body;
+  const { title, start, end, resourceId, id_cliente, id_servicos, id_barbearia } = req.body;
 
-    // Converta as datas usando Moment.js
-    const formattedStart = moment(start).format('YYYY-MM-DD HH:mm:ss');
-    const formattedEnd = moment(end).format('YYYY-MM-DD HH:mm:ss');
+  // Converta as datas usando Moment.js
+  const formattedStart = moment(start).format('YYYY-MM-DD HH:mm:ss');
+  const formattedEnd = moment(end).format('YYYY-MM-DD HH:mm:ss');
 
-    const q = "INSERT INTO agendamentos (title, start, end, id_funcionario, id_cliente, id_servico) VALUES (?, ?, ?, ?, ?, ?)";
-    
-    db.query(q, [title, formattedStart, formattedEnd, resourceId, id_cliente, id_servico], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+  // Dados para o carrinho
+  const status = 'aberto';
+  const dataCriacao = moment().format('YYYY-MM-DD HH:mm:ss');
+  const total_bruto = 10; // Valor de teste
+  const total_final = 10; // Valor de teste
+  const quantidade = 1; // Quantidade fixa para cada serviço
+  const preco_unitario = 10; // Valor de teste para preço unitário
+  const subtotal = 10; // Valor de teste para subtotal
 
-        return res.status(201).json(result);
-    });
+  // Inserir um novo carrinho antes do agendamento
+  const cartQuery = `
+      INSERT INTO carrinho (id_cliente, id_funcionario, status, data_criacao, id_barbearia, total_bruto, total_final)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(cartQuery, [id_cliente, resourceId, status, dataCriacao, id_barbearia, total_bruto, total_final], (cartErr, cartResult) => {
+      if (cartErr) return res.status(500).json({ error: cartErr.message });
+
+      const id_carrinho = cartResult.insertId; // Obter o ID do carrinho recém-criado
+
+      // Inserir o agendamento com o id_carrinho
+      const agendamentoQuery = `
+          INSERT INTO agendamentos (title, start, end, id_funcionario, id_cliente, id_carrinho)
+          VALUES (?, ?, ?, ?, ?, ?)
+      `;
+
+      db.query(agendamentoQuery, [title, formattedStart, formattedEnd, resourceId, id_cliente, id_carrinho], (err, result) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          // Adicionar os serviços ao carrinho com quantidade fixa de 1 e valores de teste
+          const itemQueries = id_servicos.map(id_servico => {
+              const itemQuery = `
+                  INSERT INTO itenscarrinho (id_carrinho, id_servico, quantidade, preco_unitario, subtotal)
+                  VALUES (?, ?, ?, ?, ?)
+              `;
+              return new Promise((resolve, reject) => {
+                  db.query(itemQuery, [id_carrinho, id_servico, quantidade, preco_unitario, subtotal], (itemErr, itemResult) => {
+                      if (itemErr) {
+                          reject(itemErr);
+                      } else {
+                          resolve(itemResult);
+                      }
+                  });
+              });
+          });
+
+          // Executar todas as promessas de inserção em itens_carrinho
+          Promise.all(itemQueries)
+              .then(itemResults => {
+                  return res.status(201).json({ agendamento: result, carrinho: { id_carrinho }, items: itemResults });
+              })
+              .catch(itemErr => {
+                  return res.status(500).json({ error: itemErr.message });
+              });
+      });
+  });
 };
+
+
 
 
 // mover agendamento

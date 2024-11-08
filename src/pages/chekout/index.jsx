@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaClock, FaCheck } from 'react-icons/fa';
 import './style.css'; // Importando o arquivo de estilo
 import Header from '../../components/header';
 import Modal from '../../components/componenteteste/modal'; // Importando o componente Modal
@@ -51,20 +51,27 @@ const CarrinhosSemPagamento = () => {
   };
 
   return (
-    <div>
+    <div className='teste1223'>
       <Header />
-      <header>
-        <h1>Header</h1>
-      </header>
+      
 
       <h2 className="titulo">Carrinhos Sem Pagamento</h2>
 
       <div className="btn-container">
-        <button className="btn-adicionar" onClick={adicionarCarrinho}>
-          <FaPlus />
-          Adicionar Carrinho
-        </button>
-      </div>
+    <button className="btn-adicionar" onClick={adicionarCarrinho}>
+      <FaPlus />
+      Adicionar Carrinho
+    </button>
+    <button className="btn-finalizado" >
+      <FaCheck /> Carrinhos Finalizados
+    </button>
+    <button className="btn-atrasado" >
+      <FaClock /> Carrinhos Atrasados
+    </button>
+    
+    
+  </div>
+
 
       <div className="carrinhos-container">
         {carrinhos.length > 0 ? (
@@ -74,10 +81,10 @@ const CarrinhosSemPagamento = () => {
               className="card-carrinho" 
               onClick={() => handleCarrinhoClick(carrinho)} // Chama a função para abrir o modal com o carrinho selecionado
             >
-              <h3>Cliente: {carrinho.id_cliente}</h3>
-              <p>Data: {new Date(carrinho.data_criacao).toLocaleDateString()}</p>
-              <p>Total Bruto: R${carrinho.total_bruto.toFixed(2)}</p>
-              <p>Total Final: R${carrinho.total_final.toFixed(2)}</p>
+              <h3 className='h3cliente'>Cliente: {carrinho.id_cliente}</h3>
+              <p className='pcliente'>Data: {new Date(carrinho.data_criacao).toLocaleDateString()}</p>
+              {/* <p>Total Bruto: R${carrinho.total_bruto.toFixed(2)}</p> */}
+              <p className='pcliente'>  Total Final: R${carrinho.total_final.toFixed(2)}</p>
             </div>
           ))
         ) : (

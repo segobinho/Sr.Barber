@@ -7,6 +7,7 @@ import Main from "../../components/main";
 import Linha from "../../components/graficoos/linha";
 import DonutChart from "../../components/graficoos/donut";
 import AreaChart from "../../components/graficoos/area";
+import SummaryCards from "../../components/cards";
 
 
 import './style.css';
@@ -67,7 +68,8 @@ function Analise() {
         <div className="containerr">
 
             <Header />
-            <div className="card-container">
+            <SummaryCards/>
+            {/* <div className="card-container">
 
                 <div className="card">
                     <h1 className="hcard">Agendamentos Este Mês</h1>
@@ -80,10 +82,13 @@ function Analise() {
                         </p>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
             <div className="chart-container">
             <div className="chart">
+                    <Linha barbersData={bdata} />
+                </div>
+            <div className="charts">
                     <h2>Metodos Mais Usados</h2>
 
                     <DonutChart dados={metodos} formatarTotal={true} />
@@ -96,9 +101,7 @@ function Analise() {
                     <DonutChart dados={quantprodutos} />
 
                 </div>
-                <div className="chart">
-                    <Linha barbersData={bdata} />
-                </div>
+               
                
                 <div className="chart">
                     <AreaChart data={receita} />

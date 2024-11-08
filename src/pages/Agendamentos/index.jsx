@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import './style.css';
-import EventoPsadrao from './Eventos';
 import EventModal from '../../components/EventModal';
 import CustomToolbar from './CustomToolbar';
 import Adicionar from '../../components/Adicionar/Adicionar';

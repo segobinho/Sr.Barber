@@ -37,25 +37,38 @@ export const addClientes = (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
 
         if (data.length > 0) {
-            // Se o cliente já existir na mesma barbearia, atualizar o campo 'ativo' para true
-            const qUpdate = "UPDATE clientes SET ativo = true WHERE id_cliente = ?";
-            db.query(qUpdate, [data[0].id_cliente], (err, result) => {
-                if (err) return res.status(500).json({ error: err.message });
+            if (data[0].ativo) {
+                // Se o cliente já existir e estiver ativo, retorna uma mensagem indicando isso
+                return res.status(200).json({ message: "Cliente já existe e está ativo" });
+            } else {
+                const qUpdate = "UPDATE clientes SET ativo = true WHERE id_cliente = ?";
+                db.query(qUpdate, [data[0].id_cliente], (err, result) => {
+                    if (err) return res.status(500).json({ error: err.message });
 
-                return res.status(200).json({ message: "Cliente já existia, foi reativado" });
-            });
+                    // Retorna os dados do cliente reativado
+                    return res.status(200).json({
+                        id_cliente: data[0].id_cliente,
+                        nome: data[0].nome,
+                        endereco: data[0].endereco,
+                        telefone: data[0].telefone,
+                        id_barbearia: data[0].id_barbearia,
+                        message: "Cliente já existia, foi reativado"
+                    });
+                });
+            }
         } else {
-            // Se o cliente não existir, adicioná-lo
+            // Se o cliente não existir, adici  oná-lo
             const qInsert = "INSERT INTO clientes (nome, endereco, telefone, id_barbearia, ativo) VALUES (?, ?, ?, ?, true)";
 
             db.query(qInsert, [nome, endereco, telefone, id_barbearia], (err, result) => {
                 if (err) return res.status(500).json({ error: err.message });
 
-                return res.status(201).json({ id: result.insertId, nome, endereco, telefone, id_barbearia });
+                return res.status(201).json({ id_cliente: result.insertId, nome, endereco, telefone, id_barbearia });
             });
         }
     });
 };
+
 
 
 
@@ -84,20 +97,20 @@ export const editCliente = (req, res) => {
 
 
 export const removeCliente = (req, res) => {
-    const clienteId = req.params.id_cliente;  // Mantendo o parâmetro da rota
+    const clienteId = req.params.id_cliente;
 
-    // Consulta SQL para atualizar o campo 'ativo' para false
-    const q = "UPDATE clientes SET ativo = false WHERE id_cliente = ?";
-
-    db.query(q, [clienteId], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Cliente não encontrado" });
+    const query = "UPDATE clientes SET ativo = false WHERE id_cliente = ?";
+    db.query(query, [clienteId], (err, result) => {
+        if (err) {
+            console.error("Erro ao desativar cliente:", err);
+            return res.status(500).json({ error: "Erro interno ao desativar cliente" });
         }
 
-        return res.status(200).json({ message: "Cliente desativado com sucesso" });
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Cliente não encontrado" });
+        }
+
+        res.status(200).json({ message: "Cliente desativado com sucesso" });
     });
 };
-
  

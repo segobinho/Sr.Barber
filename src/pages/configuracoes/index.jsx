@@ -7,8 +7,8 @@ import EditForm from '../../components/componenteteste/Editform';
 import EditField from '../../components/componenteteste/EditField';
 import EditButton from '../../components/componenteteste/EditButton';
 import Modal from '../../components/componenteteste/modal';
-import BarberCutsChart from "../../components/graficoos/teste";
-
+import { Box, Typography, TextField, Button, Avatar, IconButton, Divider } from '@mui/material';
+import { CopyAll, AccountCircle, Lock, Email, Phone } from '@mui/icons-material';
 
 
 function ProfileScreen() {
@@ -68,13 +68,13 @@ function ProfileScreen() {
                 'Content-Type': 'multipart/form-data'
             }
         })
-        .then(response => {
-            console.log('Funcionário atualizado:', response.data);
-            setIsEditing(false);
-        })
-        .catch(error => {
-            console.error("Erro ao atualizar funcionário:", error);
-        });
+            .then(response => {
+                console.log('Funcionário atualizado:', response.data);
+                setIsEditing(false);
+            })
+            .catch(error => {
+                console.error("Erro ao atualizar funcionário:", error);
+            });
     };
 
     const handleFileChange = (e) => {
@@ -89,92 +89,165 @@ function ProfileScreen() {
             [name]: value,
         });
     };
-    
+
 
     return (
-        <div>
-            <Header />
-            <Main>
-                <div className="profile-container">
-                    <h2>Tela de Perfil</h2>
-                    <div className="profile-info">
-                        <div className="profile-header">
-                            <img alt="Foto do Perfil" className="profile-photo"
-                                src={`http://localhost:8800/fotos/${funcionarios.imagens}`}
-                            />
-                            <h1>{funcionarios.nome} </h1>
-                            <h2>Cargo: {funcionarios.cargo}</h2>
-                        </div>
-                        <hr />
-                        <div className="profile-boxes">
-                            <div className="profile-box">
-                                <strong>Nome:</strong> {funcionarios.nome}
-                            </div>
+<div style={{ backgroundColor: '#222831', width: '100%',height: '945px' }}>
+<Header />
+            <Box
+                sx={{
+                    width: 600,
+                    borderRadius: 4,
+                    boxShadow: 3,
+                    backgroundColor: '#fff',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    mx: 'auto',
+                    position: 'relative',
+                    mt: 4, // Margem superior
+                    mb: 5, // Margem inferior
+                }}
+            >
+                {/* Barra Cinza e Foto */}
+                <Box
+                    sx={{
+                        position: 'relative',
+                        height: 90,
+                        backgroundColor: '#f0f0f0',
+                        borderTopLeftRadius: '16px',
+                        borderTopRightRadius: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Avatar
+                        src={`http://localhost:8800/fotos/${funcionarios.imagens}`}
+                        alt="Amélie Laurent"
+                        sx={{
+                            width: 96,
+                            height: 96,
+                            position: 'absolute',
+                            bottom: -48, // Faz com que a imagem fique metade fora da barra cinza
+                            left: 24,
+                            border: '4px solid #fff',
+                        }}
+                    />
+                </Box>
 
-                            <div className="profile-box">
-                                <strong>Telefone:</strong> {funcionarios.telefone}
-                            </div>
-                            <div className="profile-box">
-                                <strong>Email:</strong> {funcionarios.email}
-                            </div>
-                            <div className="profile-box">
-                                <strong>CPF:</strong> {funcionarios.cpf}
-                            </div>
-                        </div>
-                        <button onClick={() => setIsEditing(true)}>Editar Perfil</button>
-                        <BarberCutsChart/>
-                        
-                        
-                        {isEditing && (
-                            <div className="modal">
-                               <Modal>
-                                <EditForm onSubmit={handleSave}>
-                                    <EditField 
-                                        label="Nome" 
-                                        name="nome" 
-                                        value={funcionarios.nome || ''} 
-                                        onChange={handleChange} 
-                                    />
-                                    <EditField 
-                                        label="Telefone" 
-                                        name="telefone" 
-                                        value={funcionarios.telefone || ''} 
-                                        onChange={handleChange} 
-                                    />
-                                    <EditField 
-                                        label="Email" 
-                                        name="email" 
-                                        value={funcionarios.email || ''} 
-                                        onChange={handleChange} 
-                                    />
-                                    <EditField 
-                                        label="CPF" 
-                                        name="cpf" 
-                                        value={funcionarios.cpf || ''} 
-                                        onChange={handleChange} 
-                                    />
-                                     <EditField 
-                                            label="Foto do Perfil" 
-                                            name="foto" 
-                                            type="file" 
-                                            onChange={handleFileChange} 
-                                        />
-                                    <div className="button-group">
-                                        <EditButton type="submit" onClick={handleSave}>Salvar</EditButton>
-                                        <EditButton type="button" onClick={() => setIsEditing(false)}>Cancelar</EditButton>
+                {/* Nome e Email */}
 
-                                        
+                <Box sx={{ textAlign: 'left', mt: 5, ml: 2, position: 'relative' }}>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '-50px',  // Ajuste o valor conforme necessário
+                        right: '10px',
+                        textAlign: 'right'
+                    }}>
+                        <Typography variant="h6" color='black'>{funcionarios.cargo}</Typography>
+                    </Box>
+                    <Typography variant="h6">{funcionarios.nome}</Typography>
+                    <Typography color="textSecondary">{funcionarios.email}</Typography>
+                </Box>
 
-                                    </div>
-                                </EditForm>
-                                </Modal>
+                {/* Botões de Link e Ver Perfil */}
 
-                            </div>
-                        )}
-                    </div>
 
-                </div>
-            </Main>
+                {/* Formulário de Edição */}
+                <Divider />
+
+                <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, px: 3 }}>
+                    <TextField label="Nome" defaultValue={funcionarios.nome} fullWidth />
+                    <Divider />
+                    <TextField
+                        label="Telefone"
+                        defaultValue={funcionarios.telefone}
+                        fullWidth
+                        InputProps={{
+                            endAdornment: <Phone sx={{ color: '#FFD369' }}  />,
+                        }}
+                    />
+                    <Divider />
+                    <TextField
+                        label="Email"
+                        defaultValue={funcionarios.email}
+                        type="email"
+                        fullWidth
+                        InputProps={{
+                            endAdornment: <Email sx={{ color: '#FFD369' }}  />,
+                        }}
+                    />
+                    <Divider />
+                    <TextField
+                        label="Senha"
+                        type="password"  // Adiciona o tipo "password" para esconder o texto
+                        InputProps={{
+                            startAdornment: <Typography color="textSecondary" ></Typography>,
+                            endAdornment: <Lock sx={{ color: '#FFD369' }}  />,
+                        }}
+                        defaultValue="amelie"
+                        fullWidth
+                    />
+                    <Divider />
+                </Box>
+
+                {/* Foto do Perfil */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        mt: 2,
+                    }}
+                >
+    <Typography color="textSecondary" sx={{ mt: -7, ml: 3, mr: 9}}>Foto de perfil</Typography>  {/* Ajustando o espaço superior da tipografia */}
+
+    <Avatar 
+        src={`http://localhost:8800/fotos/${funcionarios.imagens}`} 
+        alt="Profile photo" 
+        sx={{ width: 52, height: 52, ml: 0,mt:-2 }} // Ajustando margem à esquerda se necessário
+    />
+    <Button 
+        variant="outlined" 
+        component="label"
+        sx={{
+            ml: 1,
+            mt: -4,
+            borderColor: '#FFD369',  // Cor da borda
+            color: 'black',  // Cor do texto
+            '&:hover': {
+                borderColor: '#FFD369',  // Cor da borda ao passar o mouse
+                backgroundColor: 'rgba(255, 211, 105, 0.1)',  // Cor de fundo ao passar o mouse
+            },
+        }}  // Adicionando um pequeno afastamento à esquerda do botão
+    >
+        Clique para mudar
+        <input type="file" hidden />
+    </Button>
+                </Box>
+                <Divider />
+
+                {/* Botões de Ação */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end', // Alinha os botões no canto direito
+                        alignItems: 'center', // Centraliza os botões verticalmente
+                        mt: 2, // Margem superior
+                        mr: 3, // Margem direita para afastar dos lados
+                        mb: 2, // Margem inferior para afastar dos botões da parte de baixo
+                    }}
+                >
+                    <Button variant="text" sx={{ mr: 2, color:'black' }}>
+                        Cancelar
+                    </Button>
+                    <Button variant="contained" sx={{ background: '#FFD369', color:'#f0f0f0' }} >
+                        Salvar
+                    </Button>
+                </Box>
+            </Box>
+
         </div>
     );
 }

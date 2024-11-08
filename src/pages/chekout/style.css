@@ -1,5 +1,12 @@
-/* Header */
-header h1 {
+:root {
+  --cor1: #FFD369; /* Primária */
+  --cor2: #BD9E54; /* Secundária */
+  --cor3: #8C8C8C; /* Neutros */
+  --cor4: #222831; /* Fundo de cabeçalhos */
+  --cor5: #161717; /* Elementos escuros */
+  --cor6: #000000; /* Texto e sombras */
+  --cor7: #ffffff;
+}header h1 {
     text-align: center;
     margin: 20px 0;
   }
@@ -13,7 +20,8 @@ header h1 {
   
   /* Botão para adicionar carrinho */
   .btn-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
     margin-bottom: 20px;
   }
   
@@ -37,11 +45,47 @@ header h1 {
   }
   
   .card-carrinho {
-    border: 1px solid #ccc;
     border-radius: 8px;
     padding: 20px;
     margin: 10px;
     width: 250px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: black;
   }
   
+
+  .teste1223{
+    background-color: var(--cor4) ;
+    height: 945px;
+  }
+
+  .h3cliente{
+color: var(--cor1);
+  }
+
+  .pcliente{
+    color: var(--cor2);
+  }
+  .btn-atrasado {
+    background-color: #f54838; /* Cor amarela */
+    color: var(--cor6); /* Texto preto */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .btn-finalizado {
+    background-color: #0e95e9; /* Cor azul */
+    color: var(--cor7); /* Texto branco */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    }

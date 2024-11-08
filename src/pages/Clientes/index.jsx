@@ -5,9 +5,15 @@ import FiltroBusca from '../../components/filltro/inndex';
 import './style.css';
 import axios from "axios";
 import { IoIosAddCircleOutline } from "react-icons/io";
-import useGetData from "../../hooks/Alldata/Getdata";
 import { CiTrash } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
+import { Card, CardContent, Typography, IconButton } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AddCircleOutline } from "@mui/icons-material"; // Ícone do Material UI
+
+import Swal from 'sweetalert2';
+
 
 
 function Clientes() {
@@ -73,9 +79,18 @@ function Clientes() {
             [event.target.name]: event.target.value,
         }));
     };
-    console.log("receba")
+    const validateFields = () => {
+        if (!values.nome || !values.telefone || !values.endereco || (user.cargo === 'admin' && !values.id_barbearia)) {
+            toast.warning("Por favor, preencha todos os campos obrigatórios.");
+            return false;
+        }
+        return true;
+    };
+
 
     const handleClienteAdd = () => {
+        if (!validateFields()) return;
+
         const idBarbearia = user.cargo === 'admin' ? values.id_barbearia : user.id_barbearia;
 
         axios.post('http://localhost:8800/add', {
@@ -85,13 +100,23 @@ function Clientes() {
             id_barbearia: idBarbearia, // Enviando o id_barbearia conforme a lógica
 
         }).then((response) => {
-            setClientes([...clientes, response.data]);
-            setClientesFiltrados([...clientes, response.data]);
+            const successMessage = response.data.message || 'Cliente adicionado com sucesso!';
 
-            setValues({});
-            setShowAddClienteForm(false);
+            if (successMessage === "Cliente já existe e está ativo") {
+                // Apenas exibe a mensagem se o cliente já existir e estiver ativo
+                toast.info(successMessage);
+            } else {
+                // Adiciona o cliente apenas se ele for novo ou reativado
+                setClientes([...clientes, response.data]);
+                setClientesFiltrados([...clientes, response.data]);
+                setValues({});
+                setShowAddClienteForm(false);
+                toast.success(successMessage);
+            }
         }).catch((error) => {
             console.error("Erro ao adicionar cliente:", error);
+            const errorMessage = error.response?.data?.message || 'Erro ao adicionar cliente.';
+            toast.error(errorMessage);
         });
     };
 
@@ -100,7 +125,7 @@ function Clientes() {
         console.log(cliente)
         setIsEditing(false);
         setShowAddClienteForm(false);
-        
+
     };
 
     const handleClienteEditForm = () => {
@@ -125,10 +150,13 @@ function Clientes() {
                 setIsEditing(false);
                 setSelectedCliente(response.data);
                 setShowAddClienteForm(false);
+                toast.success('Cliente editado com sucesso!');
             })
             .catch((error) => {
                 console.error("Erro ao salvar edição:", error);
                 console.log(values)
+                toast.error('Erro ao editar cliente.');
+
             });
     };
 
@@ -140,37 +168,83 @@ function Clientes() {
     };
 
     const handleClienteDelete = (clienteId) => {
-        axios.delete(`http://localhost:8800/clientes/${clienteId}`)
-            .then(() => {
-                setClientes(clientes.filter(cliente => cliente.id_cliente !== clienteId));
-                setSelectedCliente(null);
-            })
-            .catch((error) => {
-                console.error("Erro ao deletar cliente:", error);
-            });
+        Swal.fire({
+            title: 'Tem certeza que deseja deletar?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, deletar!',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                popup: 'swal-custom-popup',
+                title: 'swal-custom-title',
+                content: 'swal-custom-text',
+                confirmButton: 'swal-custom-confirm-button',
+                cancelButton: 'swal-custom-cancel-button'
+            },
+            width: '300px', 
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`http://localhost:8800/clientes/${clienteId}`)
+                    .then((response) => {
+                        setClientes(clientes.filter(cliente => cliente.id_cliente !== clienteId));
+                        setSelectedCliente(null);
+                        const successMessage = response.data.message || 'Cliente deletado com sucesso!'; 
+                        toast.success(successMessage);
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao deletar cliente:", error);
+                        const errorMessage = error.response?.data?.message || 'Erro ao deletar cliente.';
+                        toast.error(errorMessage);
+                    });
+            }
+        });
+    };
+    const handleTitleClick = () => {
+        setSelectedCliente(null);
     };
 
     return (
         <div>
             <Header />
             <Main>
+                <ToastContainer />
                 <div className="container">
                     <div className="bloco">
-                        <div className="title">
+                        <div className="title" onClick={handleTitleClick}>
                             <h1>Clientes</h1>
-                            <IoIosAddCircleOutline className="button1" onClick={handleClienteAddForm} />
+                            <AddCircleOutline className="button1" onClick={handleClienteAddForm} /> 
                         </div>
                         <hr />
                         <div>
                             <FiltroBusca itens={clientes} onFiltrar={setClientesFiltrados} placeholder={"Buscar cliente"} />
                             {clientesFiltrados.map(cliente => (
-                                <div className="barbearias-list" key={cliente.id_cliente}>
-                                    <div onClick={() => handleClienteClick(cliente)}>
-                                        <p className="clientep"><strong>Nome:</strong> {cliente.nome}</p>
-                                    </div>
-                                    <p className="clientep"><strong>Endereço:</strong> {cliente.telefone}</p>
-                                    <p></p>
-                                </div>
+                                <Card
+                                    className="barbearias-list"
+                                    key={cliente.id_cliente}
+                                    variant="outlined"
+                                    onClick={() => handleClienteClick(cliente)}
+                                    sx={{
+                                        margin: 1,
+                                        borderColor: 'rgba(255, 255, 255, 0.5)', // Borda branca transparente
+                                        backgroundColor: 'transparent', // Fundo transparente
+                                        width: '200px', // Largura do card
+                                        height: '60px', // Altura do card
+                                        '&:hover': {
+                                            borderColor: 'rgba(255, 255, 255, 0.8)', // Borda mais visível ao passar o mouse
+                                        },
+                                    }}
+                                >
+                                    <CardContent>
+                                        <Typography variant="subtitle2" className="clientep" sx={{ color: 'yellow', fontSize: '0.8rem' }}>
+                                            <strong>Nome:</strong> {cliente.nome}
+                                        </Typography>
+                                        <Typography variant="subtitle2" className="clientep" sx={{ color: 'yellow', fontSize: '0.8rem' }}>
+                                            <strong>Telefone:</strong> {cliente.telefone}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
                             ))}
                         </div>
                     </div>
@@ -239,12 +313,7 @@ function Clientes() {
                             )}
                             {!showAddClienteForm && !isEditing && !selectedCliente && (
 
-                              <p className="clique">Clique em um cliente para ver os detalhes</p>
-                           
-
-
-
-
+                                <p className="clique">Clique em um cliente para ver os detalhes</p>
                             )}
                         </div>
                     </div>
