@@ -8,6 +8,8 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'; // Importar os es
 import 'moment/locale/pt-br'; // Importa o idioma português
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+
 
 
 import './style.css';
@@ -15,7 +17,6 @@ import EventModal from '../../components/EventModal';
 import CustomToolbar from './CustomToolbar';
 import Adicionar from '../../components/Adicionar/Adicionar';
 import AdicionarEventoModal from '../../components/AdicionarEventoModal/AdicionarEventoModal';
-import useGetData from '../../hooks/Alldata/Getdata';
 import Header from '../../components/header';
 
 moment.locale('pt-br'); // Define o idioma como português
@@ -53,9 +54,6 @@ function Agenda() {
 
   
 
-
-
-
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
     setUser(userData);
@@ -66,29 +64,50 @@ function Agenda() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/agendamentos');
-        // tirar dps 
-        console.log(response.data)  
+        const userData = JSON.parse(localStorage.getItem('user'));
+        const isAdmin = userData && userData.cargo === 'admin'; // Verificar se é admin
+        const idBarbearia = userData ? userData.id_barbearia : null;
+        console.log('tes3r',userData.id_barbearia  )
+
+
+        let url = 'http://localhost:8800/agendamentos'; // URL padrão para admin
+
+        // Se o usuário não for admin, usa o id_barbearia na URL
+        if (!isAdmin && idBarbearia) {
+          url = `http://localhost:8800/agendamentos/?id_barbearia=${idBarbearia}`;
+        }
+
+        const response = await axios.get(url);
         const data = response.data;
 
-        const formattedEvents = data.map((event) => ({
-          ...event,
-          id: event.id_agendamento, // Mapeia 'id_agendamento' para 'id'
-          start: moment(event.start, 'YYYY-MM-DD HH:mm:ss').toDate(),
-          end: moment(event.end, 'YYYY-MM-DD HH:mm:ss').toDate(),
-          resourceId: event.id_funcionario,
-          
-        }));
+        const formattedEvents = data.map((event) => {
+          // Verificar se o status é 'pendente' e se a data de término é anterior à data atual
+          const currentDate = moment().startOf('day'); // Obtém a data de hoje sem horário
+          const eventEndDate = moment(event.end, 'YYYY-MM-DD HH:mm:ss');
 
-        setEventos(formattedEvents);
+          if (event.status === 'pendente' && eventEndDate.isBefore(currentDate)) {
+            event.status = 'atrasado'; // Atualiza o status para "atrasado"
+          }
+          const startAdjusted = moment.utc(event.start).local().toDate(); // Ajustar para o horário local
+        const endAdjusted = moment.utc(event.end).local().toDate(); // Ajustar para o horário local
+
+          return {
+            ...event,
+            id: event.id_agendamento, // Mapeia 'id_agendamento' para 'id'
+            start: startAdjusted,
+            end: endAdjusted,
+            resourceId: event.id_funcionario,
+          };
+        });
+
+        setEventos(formattedEvents); // Atualiza o estado com os eventos formatados
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }
     };
 
     fetchData();
-   
-  }, []); // Usa userRef.current como dependência
+  }, []); // Recarrega os eventos ao carregar o componente
   
 
 
@@ -132,8 +151,8 @@ function Agenda() {
   const handleEventClose = () => {
     setevetosSelected(null)
   }
-
   const handleEventUpdate = async (updatedEvent) => {
+    console.log('update', updatedEvent)
     try {
       // Fazendo a requisição para atualizar o evento no banco de dados
       await axios.put(`http://localhost:8800/agendamentos/${updatedEvent.id}`, {
@@ -142,7 +161,7 @@ function Agenda() {
         end: moment(updatedEvent.end).format('YYYY-MM-DD HH:mm:ss'),
         id_funcionario: updatedEvent.id_funcionario, // Atualizando o barbeiro selecionado
         id_cliente: updatedEvent.id_cliente,
-        id_servico: updatedEvent.id_servico,
+        id_servicos: updatedEvent.id_servicos,
       });
 
       console.log('Erro ao receberr :', updatedEvent)
@@ -150,7 +169,10 @@ function Agenda() {
       // Atualizando o estado local com o evento modificado
       const updatedEvents = eventos.map((event) => {
         if (event.id === updatedEvent.id) {
-          return updatedEvent; // Substitui o evento atualizado
+          return {
+          ...updatedEvent,
+          resourceId: parseInt(updatedEvent.id_funcionario), // Substitui id_funcionario por resourceId
+        };
         }
         return event;
       });
@@ -163,19 +185,76 @@ function Agenda() {
     }
   };
   
-const handleEventDelete = (eventId) => {
+  const handleEventDelete = async (eventId) => {
+    // Exibe a confirmação com SweetAlert2
+    const result = await Swal.fire({
+      title: 'Tem certeza que deseja deletar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sim, deletar!',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        popup: 'swal-custom-popup',
+        title: 'swal-custom-title',
+        content: 'swal-custom-text',
+        confirmButton: 'swal-custom-confirm-button',
+        cancelButton: 'swal-custom-cancel-button'
+      },
+      width: '300px',
+    });
   
-    axios.delete(`http://localhost:8800/agendamentos/${eventId}`);
-    setevetosSelected(null);
+    // Se o usuário clicar em "Sim, deletar!"
+    if (result.isConfirmed) {
+      try {
+        // Faz a requisição de exclusão
+        await axios.delete(`http://localhost:8800/agendamentos/${eventId}`);
+        
+        // Exibe a mensagem de sucesso com Toastify
+        toast.success('Evento excluído com sucesso!');
+        
+        // Reseta a variável de evento selecionado
+        setevetosSelected(null);
+        setEventos(prevEvents => prevEvents.filter(event => event.id !== eventId));
+      } catch (error) {
+        // Exibe a mensagem de erro com Toastify
+        const errorMessage = error.response?.data?.message || 'Erro ao excluir evento';
+        toast.error(errorMessage);
+      }
+    }
+  };
 
-};
 
+const eventStyle = (event) => {
+  let backgroundColor = ''; // Cor de fundo inicial
 
-  const eventStyle = (event) => ({
+  // Lógica para determinar a cor com base no status
+  switch (event.status) {
+    case 'finalizado': // Se o status for "finalizado"
+      backgroundColor = '#A8E4A1'; // Verde suave
+      break;
+    case 'pendente': // Se o status for "pendente"
+      backgroundColor = '#FFD369'; // Amarelo
+      break;
+    case 'atrasado': // Se o status for "atrasado"
+      backgroundColor = '#FF7F7F'; // Vermelho suave
+      break;
+    default:
+      backgroundColor = '#d3d3d3'; // Cor padrão cinza claro
+      break;
+  }
+
+  // Retorna o estilo com a cor do evento
+  return {
     style: {
-      backgroundColor: event.color,
+      backgroundColor, // Cor do evento
+      color: 'black',   // Texto preto para contraste
+      border: 'none',   // Remove a borda azul
+      boxShadow: 'none', // Remove qualquer sombra ao redor do evento
     },
-  });
+  };
+};
 
   const handleBarberClick = (barberId) => {
     setSelectedBarber(barberId); // Armazena o barbeiro selecionado
@@ -190,7 +269,7 @@ const handleEventDelete = (eventId) => {
         const { cargo, id_barbearia } = userData; // Obtenha o cargo e o id_barbearia
         console.log(userData)
   
-        const response = await axios.get('http://localhost:8800/funcionarios', {
+        const response = await axios.get('http://localhost:8800/funcionariosBG', {
           params: {
             cargo: cargo,            // Enviar o cargo como parâmetro
             id_barbearia: id_barbearia // Enviar o id_barbearia como parâmetro
@@ -230,7 +309,7 @@ const handleEventDelete = (eventId) => {
     fetchse(); // Chama a função ao montar o componente
   }, []);
 
-
+console.log('eveeeento', eventos)
 
   return (
 

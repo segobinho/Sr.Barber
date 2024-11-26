@@ -25,6 +25,25 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
   const [clienteSelecionado, setClienteSelecionado] = useState(''); // Cliente selecionado
   const [servicosSelecionados, setServicosSelecionados] = useState([]); // IDs dos serviços selecionados
   const [user, setUser] = useState([]);
+  const [funcionario, setFuncionario] = useState([]); // Estado para armazenar os dados do funcionário
+
+
+
+  useEffect(() => {
+    // Função para buscar o funcionário (barbeiro) pelo ID
+    const getFuncionarioById = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8800/funcionariosByID/${barberId}`);
+        setFuncionario(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar dados do funcionário:', error);
+      }
+    };
+
+    if (barberId) {
+      getFuncionarioById();
+    }
+  }, [barberId]);
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
@@ -50,20 +69,23 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
       });
     }
   }, []);
+  console.log(clientes)
 
   useEffect(() => {
     // Função para buscar os serviços do backend
     const fetchServicos = async () => {
       try {
-        const servicosResponse = await axios.get('http://localhost:8800/se');
-        setServicos(servicosResponse.data);
+        if (funcionario.id_barbearia) {
+          const servicosResponse = await axios.get(`http://localhost:8800/se?id_barbearia=${funcionario.id_barbearia}`);
+          setServicos(servicosResponse.data);
+        }
       } catch (error) {
         console.error('Erro ao buscar serviços:', error);
       }
     };
     
     fetchServicos();
-  }, []);
+  }, [funcionario.id_barbearia]);
 
   const handleServicoChange = (e) => {
     const { value, checked } = e.target;
@@ -73,7 +95,7 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
     
     if (dataInicio >= dataFim) {
       toast.warning('A data de fim não pode ser anterior à data de início!');
@@ -81,37 +103,61 @@ const AdicionarEventoModal = ({ barberId, onClose, setEventos, eventos }) => {
     }
 
     try {
+      const userData = JSON.parse(localStorage.getItem('user'));
+      setUser(userData);
+      const cliente = clientes.find(cliente => cliente.id_cliente.toString() === clienteSelecionado);
+      const nomeCliente = cliente ? cliente.nome : '';
+  
+      // Pegando o nome do primeiro serviço selecionado
+      const primeiroServico = servicos.find(servico => servico.id_servico.toString() === servicosSelecionados[0]);
+      const nomeServico = primeiroServico ? primeiroServico.nome : '';
+  
+      // Construindo o título
+      const tituloEvento = `${nomeCliente} - ${nomeServico}`;
+
       const novoEvento = {
-        title: `${titulo}`, // Exibir título
+        title:  tituloEvento, // Exibir título
         start: new Date(dataInicio),
         end: new Date(dataFim),
         resourceId: barberId,
         id_cliente: clienteSelecionado, // ID do cliente
-        id_servico: servicosSelecionados, // Array de IDs dos serviços
-        id_barbearia: 1 // Sempre enviar id_barbearia como 1
+        id_servicos: servicosSelecionados, // Array de IDs dos serviços
+        id_barbearia:  funcionario.id_barbearia
 
       };
       console.log('Novo evento:', novoEvento); // Console log para ver o conteúdo de novoEvento
 
 
 
-      await axios.post('http://localhost:8800/agendamentos', novoEvento);
+      const response =  await axios.post('http://localhost:8800/agendamentos', novoEvento);
+      
+      const idAgendamentoCriado = response.data.agendamento.id_agendamento;
+      const carrinhoStatus = response.data.carrinho.status; // Pegando o status diretamente da resposta
 
-      setEventos([...eventos, novoEvento]);
+
+      const eventoComId = {
+        title:  tituloEvento, // Exibir título
+        start: new Date(dataInicio),
+        end: new Date(dataFim),
+        id: idAgendamentoCriado,
+        resourceId: barberId,
+        status: carrinhoStatus,  // Status do carrinho adicionado
+        id_cliente: clienteSelecionado, // ID do cliente
+        id_barbearia:  userData.id_barbearia,
+        id_servicos: servicosSelecionados.join(','),
+        id_funcionario: barberId
+      };
+console.log('comid, ',  eventoComId )
+      setEventos([...eventos,  eventoComId]);
       onClose();
     } catch (error) {
       console.error('Erro ao adicionar evento:', error);
     }
   };
 console.log(servicosSelecionados)
-const handleClienteChange = (e) => {
-  const selectedClienteId = e.target.value;
-  setClienteSelecionado(selectedClienteId);
 
-  // Atualize o título automaticamente com o nome do cliente selecionado
-  const cliente = clientes.find(c => c.id_cliente === selectedClienteId);
-  setTitulo(cliente ? cliente.nome : '');
-};
+
+
   return (
     <div className='modal'>
       <ToastContainer />
@@ -149,7 +195,7 @@ const handleClienteChange = (e) => {
               ))}
             </div>
           </div>
-          <div>
+          {/* <div>
             <label>Título (opcional):</label>
             <input
               type='text'
@@ -157,7 +203,7 @@ const handleClienteChange = (e) => {
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Ex: Corte Simples"
             />
-          </div>
+          </div> */}
           <div>
             <label>Data Início:</label>
             <input

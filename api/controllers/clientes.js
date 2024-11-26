@@ -1,24 +1,28 @@
 import { db } from "../db.js"
 
 export const getClientes = (req, res) => {
-    const { cargo } = req.query;  // Corrigido para req.query
-    const { id_barbearia } = req.query; // Também usando req.query
+    const { cargo, id_barbearia } = req.query;  // Corrigido para obter os parâmetros diretamente de req.query
 
     let q;
+    let params = [];  // Parâmetros para a consulta
 
     if (cargo === 'admin') {
         // Se o cargo for admin, buscar todos os clientes
         q = "SELECT * FROM clientes WHERE ativo = true";
-    } else if (cargo === 'gerente') {
-        // Se o cargo for gerente, buscar apenas os clientes da mesma barbearia
+    } else if (cargo === 'Gerente' || cargo === 'Recepcionista' || cargo === 'Barbeiro') {
+        // Se o cargo for gerente, recepcionista ou barbeiro, buscar apenas os clientes da mesma barbearia
+        if (!id_barbearia) {
+            return res.status(400).json({ message: "id_barbearia é obrigatório para cargos de gerente, recepcionista e barbeiro" });
+        }
         q = "SELECT * FROM clientes WHERE id_barbearia = ? AND ativo = true";
+        params = [id_barbearia]; // Passa o id_barbearia como parâmetro
     } else {
         // Caso o cargo não seja válido, retornar erro
         return res.status(403).json({ message: "Acesso negado" });
     }
 
-    // Executa a consulta com ou sem o id_barbearia dependendo do cargo
-    db.query(q, cargo === 'gerente' ? [id_barbearia] : [], (err, data) => {
+    // Executa a consulta com os parâmetros adequados
+    db.query(q, params, (err, data) => {
         if (err) return res.status(500).json({ error: err.message });
 
         return res.status(200).json(data);

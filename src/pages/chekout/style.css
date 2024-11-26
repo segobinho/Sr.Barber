@@ -16,6 +16,7 @@
     text-transform: uppercase;
     text-align: center;
     margin: 20px 0;
+    margin-bottom: 0px;
   }
   
   /* Botão para adicionar carrinho */
@@ -25,8 +26,20 @@
     margin-bottom: 20px;
   }
   
-  .btn-adicionar {
+  .btn-todos {
     background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-dia {
+    background-color: var(--cor1);
     color: white;
     padding: 10px 20px;
     border: none;
@@ -47,6 +60,7 @@
   .card-carrinho {
     border-radius: 8px;
     padding: 20px;
+    border: 1px solid transparent;
     margin: 10px;
     width: 250px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -56,7 +70,7 @@
 
   .teste1223{
     background-color: var(--cor4) ;
-    height: 945px;
+    min-height: 945px; /* Altere 'height' para 'min-height' */
   }
 
   .h3cliente{
@@ -88,4 +102,50 @@ color: var(--cor1);
     display: flex;
     align-items: center;
     gap: 10px;
+    }
+
+    .filtros {
+      display: flex;
+      justify-content: center;  /* Centraliza os filtros na tela */
+      align-items: center;      /* Alinha verticalmente ao centro */
+      gap: 10px;                /* Espaçamento entre os filtros */
+      max-width: 800px;         /* Limita a largura dos filtros */
+      margin: 0 auto;           /* Centraliza o bloco de filtros na tela */
+    }
+    
+    .filtros .MuiTextField-root {
+      width: 180px;  /* Define uma largura fixa para os campos */
+    }
+
+    .titulo2 {
+      text-transform: uppercase;
+      text-align: center;
+      margin: 20px 0;
+      margin-top: 10px;
+    }
+          
+
+
+    .carrinhop {
+        color: var(--cor2);
+    }
+
+    .lip {
+      color: var(--cor2);
+    }   
+
+    .carrinhoitediv{
+      background-color: var(--cor4);
+    }
+
+    .card-carrinho.pendente {
+      border-color: #FFD369; 
+    }
+
+    .card-carrinho.finalizado {
+      border-color:  #87cefa;
+    }
+    
+    .card-carrinho.atrasado {
+      border-color: #f84e4e; 
     }

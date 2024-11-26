@@ -4,17 +4,14 @@ import Main from '../../components/main/index';
 import FiltroBusca from '../../components/filltro/inndex';
 import './style.css';
 import axios from "axios";
-import { IoIosAddCircleOutline } from "react-icons/io";
 import { CiTrash } from "react-icons/ci";
 import { GoPencil } from "react-icons/go";
-import { Card, CardContent, Typography, IconButton } from '@mui/material';
+import { Card, CardContent, Typography, IconButton, Select, TextField, FormControl, Button, MenuItem, InputLabel, Box } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AddCircleOutline } from "@mui/icons-material"; // Ícone do Material UI
-
+import { AddCircleOutline, Password } from "@mui/icons-material";
 import Swal from 'sweetalert2';
-
-
+import CategoriasClientes from "../../components/retorno";
 
 function Clientes() {
     const [clientes, setClientes] = useState([]);
@@ -25,20 +22,22 @@ function Clientes() {
     const [isEditing, setIsEditing] = useState(false);
     const [clientesFiltrados, setClientesFiltrados] = useState(clientes);
     const [barbearias, setBarbearias] = useState([]);
-
-
-
+    const [receba, setReceba] = useState([
+        { id: 1, nome: "João Silva", categoria: "1 mes" },
+   
+    ]);
+    
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
     }, []);
 
+    
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
 
-        // Buscar barbearias se o usuário for admin
         if (userData?.cargo === 'admin') {
             axios.get('http://localhost:8800/barbearias')
                 .then((response) => setBarbearias(response.data))
@@ -47,7 +46,6 @@ function Clientes() {
     }, []);
 
     useEffect(() => {
-        // Obtém o usuário do localStorage
         const userData = JSON.parse(localStorage.getItem('user'));
         setUser(userData);
         console.log(userData.cargo);
@@ -55,22 +53,20 @@ function Clientes() {
 
 
         if (userData) {
-            // Faz a requisição para buscar os clientes
             axios.get('http://localhost:8800/clientes', {
                 params: {
                     cargo: userData.cargo,
-                    id_barbearia: userData.id_barbearia  // Corrigido aqui
+                    id_barbearia: userData.id_barbearia
                 }
             })
                 .then(response => {
-                    setClientes(response.data);  // Define os clientes com os dados da resposta
+                    setClientes(response.data);
                 })
                 .catch(error => {
                     console.error("Erro ao buscar clientes:", error);
                 });
         }
-    }, []);  // Executa apenas uma vez, ao montar o componente
-
+    }, []);
 
 
     const handleAddValues = (event) => {
@@ -88,25 +84,27 @@ function Clientes() {
     };
 
 
-    const handleClienteAdd = () => {
+    const handleClienteAdd = () => {    
         if (!validateFields()) return;
 
         const idBarbearia = user.cargo === 'admin' ? values.id_barbearia : user.id_barbearia;
 
         axios.post('http://localhost:8800/add', {
             nome: values.nome,
+            // email: values.email,
+            // password: values.password,
             telefone: values.telefone,
             endereco: values.endereco,
-            id_barbearia: idBarbearia, // Enviando o id_barbearia conforme a lógica
+            id_barbearia: idBarbearia,
 
         }).then((response) => {
             const successMessage = response.data.message || 'Cliente adicionado com sucesso!';
 
             if (successMessage === "Cliente já existe e está ativo") {
-                // Apenas exibe a mensagem se o cliente já existir e estiver ativo
+
                 toast.info(successMessage);
             } else {
-                // Adiciona o cliente apenas se ele for novo ou reativado
+
                 setClientes([...clientes, response.data]);
                 setClientesFiltrados([...clientes, response.data]);
                 setValues({});
@@ -137,7 +135,7 @@ function Clientes() {
             id_barbearia: user.cargo === 'admin' ? selectedCliente.id_barbearia : user.id_barbearia,
 
         });
-        console.log("ID da Barbearia sendo enviado para edição:", selectedCliente); // Adicionando o console.log
+        console.log("ID da Barbearia sendo enviado para edição:", selectedCliente);
         setShowAddClienteForm(true);
     };
 
@@ -183,14 +181,14 @@ function Clientes() {
                 confirmButton: 'swal-custom-confirm-button',
                 cancelButton: 'swal-custom-cancel-button'
             },
-            width: '300px', 
+            width: '300px',
         }).then((result) => {
             if (result.isConfirmed) {
                 axios.delete(`http://localhost:8800/clientes/${clienteId}`)
                     .then((response) => {
                         setClientes(clientes.filter(cliente => cliente.id_cliente !== clienteId));
                         setSelectedCliente(null);
-                        const successMessage = response.data.message || 'Cliente deletado com sucesso!'; 
+                        const successMessage = response.data.message || 'Cliente deletado com sucesso!';
                         toast.success(successMessage);
                     })
                     .catch((error) => {
@@ -214,7 +212,7 @@ function Clientes() {
                     <div className="bloco">
                         <div className="title" onClick={handleTitleClick}>
                             <h1>Clientes</h1>
-                            <AddCircleOutline className="button1" onClick={handleClienteAddForm} /> 
+                            <AddCircleOutline className="button1" onClick={handleClienteAddForm} />
                         </div>
                         <hr />
                         <div>
@@ -227,12 +225,12 @@ function Clientes() {
                                     onClick={() => handleClienteClick(cliente)}
                                     sx={{
                                         margin: 1,
-                                        borderColor: 'rgba(255, 255, 255, 0.5)', // Borda branca transparente
-                                        backgroundColor: 'transparent', // Fundo transparente
-                                        width: '200px', // Largura do card
-                                        height: '60px', // Altura do card
+                                        borderColor: 'rgba(255, 255, 255, 0.5)',
+                                        backgroundColor: 'transparent',
+                                        width: '200px',
+                                        height: '60px',
                                         '&:hover': {
-                                            borderColor: 'rgba(255, 255, 255, 0.8)', // Borda mais visível ao passar o mouse
+                                            borderColor: 'rgba(255, 255, 255, 0.8)',
                                         },
                                     }}
                                 >
@@ -253,44 +251,196 @@ function Clientes() {
                             {showAddClienteForm && (
                                 <div className="container2">
                                     <h2 className="cliente-title3">{isEditing ? "Editar Cliente" : "Adicionar Cliente"}</h2>
-                                    <input
+                                    <TextField
+                                        label="Nome"
                                         type="text"
                                         name="nome"
+                                        variant="outlined"
                                         placeholder="Nome"
                                         value={values.nome || ''}
                                         onChange={handleAddValues}
+                                        InputLabelProps={{
+                                            shrink: true, // Garante que o label fique posicionado corretamente
+                                        }}
+                                        sx={{
+                                            margin: '10px 0', // Margem superior e inferior
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'white', // Cor da borda
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: 'white', // Cor da borda ao passar o mouse
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: 'white', // Cor da borda quando focado
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: 'white', // Cor do label
+                                                '&.Mui-focused': {
+                                                    color: 'yellow', // Cor do label quando focado
+                                                },
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                color: 'yellow', // Cor do texto digitado
+                                                padding: '4px 8px', // Padding reduzido para texto digitado
+                                                height: '1.5em', // Ajusta a altura mínima
+                                            },
+                                        }}
                                     />
-                                    <input
+
+
+                                    <TextField
+                                        label="Telefone"
                                         type="number"
                                         name="telefone"
+                                        variant="outlined"
                                         placeholder="Telefone"
                                         value={values.telefone || ''}
                                         onChange={handleAddValues}
+                                        InputLabelProps={{
+                                            shrink: true, // Garante que o label fique posicionado corretamente
+                                        }}
+                                        sx={{
+                                            margin: '10px 0', // Margem superior e inferior
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'white', // Cor da borda
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: 'white', // Cor da borda ao passar o mouse
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: 'white', // Cor da borda quando focado
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: 'white', // Cor do label
+                                                '&.Mui-focused': {
+                                                    color: 'yellow', // Cor do label quando focado
+                                                },
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                color: 'yellow', // Cor do texto digitado
+                                                padding: '4px 8px', // Padding reduzido para texto digitado
+                                                height: '1.5em', // Ajusta a altura mínima
+                                            },
+                                        }}
                                     />
-                                    <input
+
+                                    <TextField
+                                        label="Endereço"
                                         type="text"
                                         name="endereco"
+                                        variant="outlined"
                                         placeholder="Endereço"
                                         value={values.endereco || ''}
                                         onChange={handleAddValues}
+                                        InputLabelProps={{
+                                            shrink: true, // Garante que o label fique posicionado corretamente
+                                        }}
+                                        sx={{
+                                            margin: '10px 0', // Margem superior e inferior
+                                            '& .MuiOutlinedInput-root': {
+                                                '& fieldset': {
+                                                    borderColor: 'white', // Cor da borda
+                                                },
+                                                '&:hover fieldset': {
+                                                    borderColor: 'white', // Cor da borda ao passar o mouse
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: 'white', // Cor da borda quando focado
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: 'white', // Cor do label
+                                                '&.Mui-focused': {
+                                                    color: 'yellow', // Cor do label quando focado
+                                                },
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                color: 'yellow', // Cor do texto digitado
+                                                padding: '4px 8px', // Padding reduzido para texto digitado
+                                                height: '1.5em', // Ajusta a altura mínima
+                                            },
+                                        }}
                                     />
+
                                     {user.cargo === 'admin' && (
-                                        <select
-                                            name="id_barbearia"
-                                            value={values.id_barbearia || ''}
-                                            onChange={handleAddValues}
-                                        >
-                                            <option value="">Selecione a Barbearia</option>
-                                            {barbearias.map(barbearia => (
-                                                <option key={barbearia.id_barbearia} value={barbearia.id_barbearia}>
-                                                    {barbearia.nome}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <FormControl fullWidth margin="normal">
+                                            <InputLabel
+                                                id="barbearia-label"
+                                                sx={{
+                                                    color: 'white', // Cor do label
+                                                    '&.Mui-focused': {
+                                                        color: 'yellow', // Cor do label quando focado
+                                                    },
+                                                }}
+                                            >
+                                                Barbearia
+                                            </InputLabel>
+                                            <Select
+                                                labelId="barbearia-label"
+                                                id="barbearia"
+                                                name="id_barbearia"
+                                                value={values.id_barbearia || ''}
+                                                onChange={handleAddValues}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: 'white', // Cor da borda
+                                                    },
+                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: 'white', // Cor ao passar o mouse
+                                                    },
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: 'white', // Cor quando focado
+                                                    },
+                                                    '& .MuiInputBase-root': {
+                                                        color: 'yellow', // Cor do texto selecionado
+                                                    },
+                                                }}
+                                            >
+                                                {barbearias.map(barbearia => (
+                                                    <MenuItem key={barbearia.id_barbearia} value={barbearia.id_barbearia}>
+                                                        {barbearia.nome}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
                                     )}
-                                    <button className="button-save" onClick={isEditing ? handleSaveEdit : handleClienteAdd}>
-                                        {isEditing ? 'Salvar' : 'Adicionar Cliente'}
-                                    </button>
+                                    <Box sx={{ display: 'flex', gap: 2 }}>
+                                        <Button
+                                            variant="contained"
+                                            onClick={isEditing ? handleSaveEdit : handleClienteAdd}
+                                            sx={{
+                                                backgroundColor: 'yellow',
+                                                color: 'black',
+                                                textTransform: 'uppercase', // Texto em maiúsculas
+                                                '&:hover': {
+                                                    backgroundColor: 'gold',
+                                                },
+                                                padding: '8px 16px',
+                                            }}
+                                        >
+                                            {isEditing ? 'Salvar' : 'Adicionar'}
+                                        </Button>
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => setShowAddClienteForm(false)}
+                                            sx={{
+                                                color: 'white',
+                                                borderColor: 'white',
+                                                textTransform: 'uppercase', // Texto em maiúsculas
+                                                '&:hover': {
+                                                    borderColor: 'yellow',
+                                                    color: 'yellow',
+                                                },
+                                                padding: '8px 16px',
+                                            }}
+                                        >
+                                            Cancelar
+                                        </Button>
+                                    </Box>
                                 </div>
                             )}
                             {!showAddClienteForm && !isEditing && selectedCliente && (
@@ -310,10 +460,13 @@ function Clientes() {
 
                                     </div>
                                 </div>
-                            )}
+                            )}  
                             {!showAddClienteForm && !isEditing && !selectedCliente && (
 
-                                <p className="clique">Clique em um cliente para ver os detalhes</p>
+<>
+<p className="clique">Clique em um cliente para ver os detalhes</p>
+<CategoriasClientes clientes={receba} />
+</>
                             )}
                         </div>
                     </div>

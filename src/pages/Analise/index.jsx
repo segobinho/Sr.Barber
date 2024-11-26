@@ -21,6 +21,8 @@ function Analise() {
     const [metodos, setMetodos] = useState([])
     const [bdata, setBdata] = useState([])
     const [quantprodutos, setQuantprodutos] = useState([])
+    const [receitas, setReceitas] = useState([])
+
     console.log("recbw")
 
     const fetchDataFromAPI = async (url, setState, errorMessage) => {
@@ -39,9 +41,11 @@ function Analise() {
         fetchDataFromAPI('http://localhost:8800/receita', setReceita, "Erro ao buscar os dados de receita");
         fetchDataFromAPI('http://localhost:8800/teste123', setDados, "Erro ao buscar os dados de agendamentos");
         fetchDataFromAPI('http://localhost:8800/quantprodutos', setQuantprodutos, "Erro ao buscar os dados de Produtos");
+        fetchDataFromAPI('http://localhost:8800/faturamentos', setReceitas, "Erro ao buscar os dados de Produtos");
+
 
     }, []);
-
+console.log('receita', receitas)
     useEffect(() => {
         if (dados.length > 0) {
             const contadorAgendamentos = dados.reduce((acc, curr) => {
@@ -68,7 +72,9 @@ function Analise() {
         <div className="containerr">
 
             <Header />
-            <SummaryCards/>
+            <SummaryCards
+            receita={receitas}
+            />
             {/* <div className="card-container">
 
                 <div className="card">

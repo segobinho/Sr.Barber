@@ -1,4 +1,5 @@
 import { db } from "../db.js";
+import moment from "moment/moment.js";
 
 export const Grafico = (_, res) => {
     const q = 
@@ -98,13 +99,12 @@ ORDER BY p.id_barbearia;
 
 export const metodos = (_, res) => {
   const q = `
-SELECT 
-    m.nome_metodo AS nome,
-    SUM(c.total_final) AS valor
-FROM pagamentos p
-JOIN metodos m ON p.id_metodo = m.id_metodo
-JOIN carrinho c ON p.id_carrinho = c.id_carrinho
-GROUP BY m.nome_metodo;
+ SELECT 
+        m.nome_metodo AS nome,
+        COUNT(*) AS valor
+    FROM pagamentos p
+    JOIN metodos m ON p.id_metodo = m.id_metodo
+    GROUP BY m.nome_metodo;
 
 
   `;
@@ -176,3 +176,22 @@ ORDER BY
     return res.status(200).json(data);
 }) 
 }
+
+export const faturamento = (_, res) => {
+  // Obtemos o ano e mês atuais
+  const anoAtual = moment().format('YYYY');
+  const mesAtual = moment().format('MM');
+
+  const q = `
+    SELECT 
+      SUM(CASE WHEN YEAR(data_pagamento) = ? THEN valor_pago ELSE 0 END) AS faturamento_anual,
+      SUM(CASE WHEN YEAR(data_pagamento) = ? AND MONTH(data_pagamento) = ? THEN valor_pago ELSE 0 END) AS faturamento_mensal
+    FROM pagamentos;
+  `;
+
+  db.query(q, [anoAtual, anoAtual, mesAtual], (err, data) => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    return res.status(200).json(data[0]); // Retornamos apenas o primeiro resultado
+  });
+};

@@ -3,6 +3,39 @@ import fs from 'fs'; // Importar o módulo fs para manipulação de arquivos
 
 
 
+export const getFuncionariosBG = (req, res) => {
+    const { cargo } = req.query;  // Corrigido para req.query
+    const { id_barbearia } = req.query; // Também usando req.query
+
+    let q;
+
+    if (cargo === 'admin') {
+        // Se o cargo for 'admin', buscar todos os funcionários ativos, excluindo os 'admin'
+        q = "SELECT * FROM funcionarios WHERE cargo != 'admin' AND ativo = 1";
+    } else if (cargo === 'Gerente' || cargo === 'Barbeiro'  || cargo === 'Recepcionista') {
+        // Se o cargo for 'gerente' ou 'barbeiro', buscar os funcionários ativos da barbearia correspondente
+        q = "SELECT * FROM funcionarios WHERE id_barbearia = ? AND cargo IN ('gerente', 'barbeiro') AND ativo = 1";
+    } else {
+        // Caso o cargo não seja admin, gerente ou barbeiro, retorna um erro
+        return res.status(403).json({ message: "Acesso negado" });
+    }
+
+    // Executar a consulta
+    db.query(q, [id_barbearia], (err, data) => {
+        if (err) return res.status(500).json({ message: err.message });
+
+        // Verifica se a consulta retornou algum funcionário
+        if (data.length === 0) {
+            return res.status(404).json({ message: "Ainda não possui funcionários ativos com o cargo solicitado" });
+        }
+
+        return res.status(200).json(data);
+    });
+};
+
+
+
+
 // Todos os funcionários
 export const getFuncionarios = (req, res) => {
     const { cargo } = req.query;  // Corrigido para req.query
@@ -11,23 +44,24 @@ export const getFuncionarios = (req, res) => {
     let q;
 
     if (cargo === 'admin') {
-        // Se o cargo for 'admin', buscar todos os funcionários
-        q = "SELECT * FROM funcionarios";
-    } else if (cargo === 'gerente') {
-        // Se o cargo for 'gerente', buscar apenas os funcionários da barbearia correspondente
-        q = "SELECT * FROM funcionarios WHERE id_barbearia = ?";
+        // Se o cargo for 'admin', buscar todos os funcionários ativos, excluindo os 'admin'
+        q = "SELECT * FROM funcionarios WHERE cargo != 'admin' AND ativo = 1";
+    } else if (cargo === 'Gerente' || cargo === 'Recepcionista' || cargo === 'Barbeiro') {
+        // Se o cargo for 'gerente', buscar apenas os funcionários da barbearia correspondente e ativos, excluindo os 'admin'
+        q = "SELECT * FROM funcionarios WHERE id_barbearia = ? AND cargo != 'admin' AND ativo = 1";
+        
     } else {
         // Caso o cargo não seja admin ou gerente, pode retornar uma resposta vazia ou um erro, se desejar
-        return res.status(403).json({ error: "Acesso negado" });
+        return res.status(403).json({ message: "Acesso negado" });
     }
 
     // Executar a consulta
     db.query(q, [id_barbearia], (err, data) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return res.status(500).json({ message: err.message });
 
         // Verifica se a consulta retornou algum funcionário
         if (data.length === 0) {
-            return res.status(404).json({ message: "Ainda não possui funcionários" });
+            return res.status(404).json({ message: "Ainda não possui funcionários ativos" });
         }
 
         return res.status(200).json(data);
@@ -60,15 +94,55 @@ export const getFuncionarioById = (req, res) => {
 
 // Adicionar funcionário
 export const addFuncionario = (req, res) => {
-    const { nome, cargo, telefone, id_barbearia } = req.body;
-    const q = "INSERT INTO funcionarios (nome, cargo, telefone, id_barbearia) VALUES (?, ?, ?, ?)";
+    const { nome, email, password, cargo, id_barbearia } = req.body;
+    const senha = 1;  // A senha será sempre 1
 
+    // Primeiro, verificar se já existe um funcionário com o mesmo e-mail
+    const checkEmailQuery = "SELECT * FROM funcionarios WHERE email = ?";
 
-    db.query(q, [nome, cargo, telefone, id_barbearia], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+    db.query(checkEmailQuery, [email], (err, result) => {
+        if (err) return res.status(500).json({ message: err.message });
 
+        if (result.length > 0) {
+            // Se o funcionário já existir, verificar o status ativo
+            const existingFuncionario = result[0];
+            if (existingFuncionario.ativo === 0) {
+                // Ativar o funcionário
+                const updateQuery = "UPDATE funcionarios SET ativo = 1 WHERE id_funcionario = ?";
+                db.query(updateQuery, [existingFuncionario.id_funcionario], (err, updateResult) => {
+                    if (err) return res.status(500).json({ message: err.message });
 
-        return res.status(201).json({ id: result.insertId, nome, cargo, telefone, id_barbearia });
+                    return res.status(200).json({
+                        message: 'Funcionário reativado com sucesso.',
+                        id_funcionario: existingFuncionario.id_funcionario,
+                        nome: existingFuncionario.nome,
+                        cargo: existingFuncionario.cargo,
+                        email: existingFuncionario.email,
+                        ativo: 1
+                    });
+                });
+            } else {
+                // Se já estiver ativo, retornar erro
+                return res.status(400).json({ message: 'Já existe um funcionário ativo com este e-mail.' });
+            }
+        } else {
+            // Se o funcionário não existir, inserir um novo
+            const insertQuery = "INSERT INTO funcionarios (id_barbearia, nome, cargo, email, senha, password) VALUES (?, ?, ?, ?, ?, ?)";
+            db.query(insertQuery, [id_barbearia, nome, cargo, email, senha, password], (err, result) => {
+                if (err) return res.status(500).json({ message: err.message });
+
+                return res.status(201).json({
+                    message: 'Funcionário adicionado com sucesso.',
+                    id: result.insertId,
+                    id_barbearia,
+                    nome,
+                    cargo,
+                    email,
+                    senha,
+                    password
+                });
+            });
+        }
     });
 };
 
@@ -76,80 +150,121 @@ export const addFuncionario = (req, res) => {
 // Editar funcionário
 
 export const editFuncionario = (req, res) => {
-    const { nome, telefone, email, cpf } = req.body;
+    const { nome, telefone, email, cpf, password } = req.body;
     const funcionarioId = req.params.id_funcionario;
     let imageName = null;
 
-    // Verifica se uma nova imagem foi enviada
     if (req.file) {
-        imageName = req.file.filename; // Pega o nome da nova imagem
+        imageName = req.file.filename; // Nome da nova imagem
     }
 
-    // Primeiro, buscamos o funcionário para pegar a imagem atual
-    db.query("SELECT imagens FROM funcionarios WHERE id_funcionario = ?", [funcionarioId], (err, result) => {
+    // Verifica se o CPF ou Email já existem para outro funcionário
+    const checkQuery = `
+        SELECT * FROM funcionarios 
+        WHERE (email = ? OR cpf = ?) AND id_funcionario != ?
+    `;
+
+    db.query(checkQuery, [email, cpf, funcionarioId], (err, result) => {
         if (err) {
-            return res.status(500).json({ error: "Erro ao buscar o funcionário." });
+            return res.status(500).json({ error: "Erro ao verificar email ou CPF." });
         }
 
-        // Verifica se o funcionário existe
-        if (result.length === 0) {
-            return res.status(404).json({ message: "Funcionário não encontrado." });
-        }
+        if (result.length > 0) {
+            const existingFields = [];
+            if (result[0].email === email) existingFields.push("email");
+            if (result[0].cpf === cpf) existingFields.push("CPF");
 
-        // Se uma nova imagem foi enviada, removemos a imagem antiga
-        const oldImageName = result[0].imagens; // Nome da imagem atual
-
-        if (imageName && oldImageName) {
-            const oldImagePath = `../images/${oldImageName}`; // Ajuste o caminho conforme necessário
-            fs.unlink(oldImagePath, (err) => {
-                if (err) {
-                    console.error("Erro ao remover a imagem antiga:", err);
-                }
+            return res.status(400).json({
+                message: `Os seguintes campos já estão em uso: ${existingFields.join(", ")}.`,
             });
         }
 
-        // Monta a consulta SQL para atualizar os dados do funcionário
-        let query = "UPDATE funcionarios SET nome = ?, telefone = ?, email = ?, cpf = ?";
-        const queryParams = [nome, telefone, email, cpf];
+        // Busca o funcionário atual para verificar alterações
+        db.query(
+            "SELECT * FROM funcionarios WHERE id_funcionario = ?",
+            [funcionarioId],
+            (err, result) => {
+                if (err) {
+                    return res.status(500).json({ error: "Erro ao buscar o funcionário." });
+                }
 
-        // Se uma nova imagem foi enviada, adiciona a coluna `imagens` à consulta
-        if (imageName) {
-            query += ", imagens = ?";
-            queryParams.push(imageName);
-        }
+                if (result.length === 0) {
+                    return res.status(404).json({ message: "Funcionário não encontrado." });
+                }
 
-        query += " WHERE id_funcionario = ?";
-        queryParams.push(funcionarioId);
+                const funcionarioAtual = result[0]; // Dados atuais do funcionário
 
-        // Executa a consulta para atualizar os dados
-        db.query(query, queryParams, (err, result) => {
-            if (err) {
-                return res.status(500).json({ error: "Erro ao atualizar o funcionário." });
+                // Verifica se algum campo foi modificado
+                const isModified =
+                    nome !== funcionarioAtual.nome ||
+                    telefone !== funcionarioAtual.telefone ||
+                    email !== funcionarioAtual.email ||
+                    cpf !== funcionarioAtual.cpf ||
+                    (password && password !== funcionarioAtual.password) || // Apenas compara senha se ela foi enviada
+                    (imageName && imageName !== funcionarioAtual.imagens); // Compara a imagem se uma nova foi enviada
+
+                if (!isModified) {
+                    return res.status(400).json({ message: "Nenhuma alteração foi feita." });
+                }
+
+                // Remove a imagem antiga se uma nova foi enviada
+                if (imageName && funcionarioAtual.imagens) {
+                    const oldImagePath = `../images/${funcionarioAtual.imagens}`;
+                    fs.unlink(oldImagePath, (err) => {
+                        if (err) {
+                            console.error("Erro ao remover a imagem antiga:", err);
+                        }
+                    });
+                }
+
+                // Monta a consulta SQL para atualizar os dados do funcionário
+                let query =
+                    "UPDATE funcionarios SET nome = ?, telefone = ?, email = ?, cpf = ?";
+                const queryParams = [nome, telefone, email, cpf];
+
+                if (password) {
+                    query += ", password = ?";
+                    queryParams.push(password);
+                }
+
+                if (imageName) {
+                    query += ", imagens = ?";
+                    queryParams.push(imageName);
+                }
+
+                query += " WHERE id_funcionario = ?";
+                queryParams.push(funcionarioId);
+
+                // Executa a consulta para atualizar os dados
+                db.query(query, queryParams, (err, result) => {
+                    if (err) {
+                        return res.status(500).json({ error: "Erro ao atualizar o funcionário." });
+                    }
+
+                    if (result.affectedRows === 0) {
+                        return res.status(404).json({ message: "Funcionário não encontrado." });
+                    }
+
+                    const response = {
+                        id_funcionario: funcionarioId,
+                        nome,
+                        telefone,
+                        email,
+                        cpf,
+                    };
+
+                    if (imageName) {
+                        response.imageUrl = `/images/${imageName}`;
+                    }
+
+                    return res.status(200).json(response);
+                });
             }
-
-            // Verifica se alguma linha foi afetada
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ message: "Funcionário não encontrado." });
-            }
-
-            // Monta a resposta
-            const response = {
-                id_funcionario: funcionarioId,
-                nome,
-                telefone,
-                email,
-                cpf,
-            };
-
-            // Se a imagem foi atualizada, inclui o URL da nova imagem no retorno
-            if (imageName) {
-                response.imageUrl = `/images/${imageName}`;
-            }
-
-            return res.status(200).json(response);
-        });
+        );
     });
 };
+
+
 
 
 
@@ -158,23 +273,19 @@ export const editFuncionario = (req, res) => {
 export const removeFuncionario = (req, res) => {
     const funcionarioId = req.params.id_funcionario;
 
-
-    const q = "DELETE FROM funcionarios WHERE id_funcionario = ?";
-
+    // Consulta para desativar o funcionário
+    const q = "UPDATE funcionarios SET ativo = 0 WHERE id_funcionario = ?";
 
     db.query(q, [funcionarioId], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-
+        if (err) return res.status(500).json({ message: err.message });
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Funcionário não encontrado" });
         }
 
-
-        return res.status(200).json({ message: "Funcionário deletado com sucesso" });
+        return res.status(200).json({ message: "Funcionário desativado com sucesso" });
     });
 };
-
 
 export const getBarbeiros = (_, res) => {
     const q = "SELECT * FROM funcionarios WHERE cargo = 'barbeiro'";
@@ -211,3 +322,4 @@ export const getBarbeiros = (_, res) => {
         return res.status(201).json({ imageUrl: imagePath });
     });
 };
+

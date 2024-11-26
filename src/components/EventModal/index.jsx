@@ -1,33 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import './style.css'; // Import the CSS file for styling
 
-const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros, servicos}) => {
+const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros, servicos }) => {
   const [editedEvent, setEditedEvent] = useState({ ...evento });
   const [collapsed, setCollapsed] = useState(true);
-  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState(evento.id_funcionario || ''); // Inicializa com o barbeiro do evento
-  const [servicoSelecionado, setservicoSelecionado] = useState(evento.id_servico || ''); // Inicializa com o barbeiro do evento
-
-
-  console.log('Barbeiros:', barbeiros);
-  console.log('Evento:', evento);
-  console.log('editado:', editedEvent);
-  console.log('receba', barbeiroSelecionado);
-  
+  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState(evento.id_funcionario || '');
+  const [servicosSelecionados, setServicosSelecionados] = useState(
+    evento.id_servicos ? evento.id_servicos.split(',') : []
+  );
+  const isReadOnly = evento.status === 'finalizado';
 
   useEffect(() => {
     setEditedEvent((prevState) => ({
       ...prevState,
-      id_funcionario: barbeiroSelecionado, // Atualiza id_funcionario no evento editado
+      id_funcionario: barbeiroSelecionado,
+      id_servicos: servicosSelecionados,
     }));
-  }, [barbeiroSelecionado]); // Executa o efeito quando barbeiroSelecionado mudar
+  }, [barbeiroSelecionado, servicosSelecionados]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedEvent({ ...editedEvent, [name]: value });
   };
 
-  const handleColorChange = (e) => {
-    setEditedEvent({ ...editedEvent, color: e.target.value });
+  const handleServicoChange = (e) => {
+    const { value, checked } = e.target;
+    setServicosSelecionados((prev) =>
+      checked ? [...prev, value] : prev.filter((id) => id !== value)
+    );
   };
 
   const handleStartDateChange = (e) => {
@@ -52,7 +52,7 @@ const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros, servicos})
     const updatedEvent = {
       ...editedEvent,
       id_funcionario: barbeiroSelecionado,
-      id_servico: servicoSelecionado,// Adiciona o barbeiro selecionado ao evento
+      id_servicos: servicosSelecionados.join(','), // Converting array back to string
     };
     onUpdate(updatedEvent);
     onClose();
@@ -75,18 +75,15 @@ const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros, servicos})
           <form>
             <div className='form-group'>
               <label>Título</label>
-              <input type='text' name='title' value={editedEvent.title} onChange={handleInputChange} />
+              <input type='text' name='title' value={editedEvent.title} onChange={handleInputChange} readOnly={isReadOnly} />
             </div>
             <div className='form-group'>
-              <label>Descrição</label>
-              <textarea name='desc' rows={3} value={editedEvent.desc} onChange={handleInputChange}></textarea>
-            </div>
-             <div className='form-group'>
               <label>Barbeiro:</label>
               <select
                 value={barbeiroSelecionado}
                 onChange={(e) => setBarbeiroSelecionado(e.target.value)}
                 required
+                disabled={isReadOnly}
               >
                 <option value="">Selecione um barbeiro</option>
                 {barbeiros.map((barbeiro) => (
@@ -96,47 +93,42 @@ const EventModal = ({ evento, onClose, onDelete, onUpdate, barbeiros, servicos})
                 ))}
               </select>
             </div>
-
             <div className='form-group'>
-              <label>Serviço:</label>
-              <select
-                value={servicoSelecionado}
-                onChange={(e) => setservicoSelecionado(e.target.value)}
-                required
-              >
-                <option value="">Selecione um serviço</option>
+              <label>Serviços:</label>
+              <div className='servicos-list' style={{ maxHeight: '150px', overflowY: 'auto', overflowX: 'hidden' }}>
                 {servicos.map((servico) => (
-                  <option key={servico.id_servico} value={servico.id_servico}>
-                    {servico.nome}
-                  </option>
+                  <div key={servico.id_servico}>
+                    <input
+                      type="checkbox"
+                      value={servico.id_servico}
+                      onChange={handleServicoChange}
+                      checked={servicosSelecionados.includes(servico.id_servico.toString())}
+                      disabled={isReadOnly}
+                    />
+                    <label>{servico.nome}</label>
+                  </div>
                 ))}
-              </select>
-            </div>
-            {!collapsed && (
-              <div>
-                <div className='form-group'>
-                  <label>Início</label>
-                  <input type='datetime-local' name='start' value={adjustDate(editedEvent.start)} onChange={handleStartDateChange} />
-                </div>
-                <div className='form-group'>
-                  <label>Fim</label>
-                  <input type='datetime-local' name='end' value={adjustDate(editedEvent.end)} onChange={handleEndDateChange} />
-                </div>
-                <div className='form-group'>
-                  <label>Cor</label>
-                  <input type='color' name='color' value={editedEvent.color} onChange={handleColorChange} />
-                </div>
               </div>
-            )}
+            </div>
+            <div>
+              <div className='form-group'>
+                <label>Início</label>
+                <input type='datetime-local' name='start' value={adjustDate(editedEvent.start)} onChange={handleStartDateChange} readOnly={isReadOnly} />
+              </div>
+              <div className='form-group'>
+                <label>Fim</label>
+                <input type='datetime-local' name='end' value={adjustDate(editedEvent.end)} onChange={handleEndDateChange} readOnly={isReadOnly} />
+              </div>
+            </div>
           </form>
         </div>
-        <div className='modal-footer'>
-          <button className='toggle-btn' onClick={() => setCollapsed(!collapsed)}>
-            {!collapsed ? 'Ocultar Detalhes' : 'Mostrar Detalhes'}
-          </button>
-          <button className='delete-btn' onClick={handleDelete}>Apagar</button>
-          <button className='save-btn' onClick={handleUpdate}>Salvar Alterações</button>
-        </div>
+        {!isReadOnly && (
+          <div className='modal-footer'>
+            
+            <button className='delete-btn' onClick={handleDelete}>Apagar</button>
+            <button className='save-btn' onClick={handleUpdate}>Salvar Alterações</button>
+          </div>
+        )}
       </div>
     </div>
   );

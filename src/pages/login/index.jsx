@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import './stylelogin.css';
 import Validation from '../../hooks/LoginValidation';  
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,9 @@ function Login() {
     });
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
+
+
+   
     
     const handleInput = (event) => {
         setValues(prev => ({...prev, [event.target.name]: event.target.value }));
@@ -39,6 +42,8 @@ function Login() {
             .catch(err => console.log(err));
         }
     };
+
+    
     
     return (
         <div className="LoginImage">

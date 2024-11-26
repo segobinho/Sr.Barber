@@ -65,10 +65,24 @@
   .cargoheader{
     margin-right: 20px;
   }
-  .logout-button{
-    margin-right: 15px;
+  .logout-icon{
+    cursor: pointer;
+    font-size: 32px;
+    transition: transform 0.2s;
+    margin-right: 20px;
   }
 
+  .logout-icon:hover {
+    transform: scale(1.2); /* Aumenta levemente o ícone ao passar o mouse */
+}
+
+.gear {
+  transition: transform 0.2s;
+}
+
+.gear:hover {
+  transform: scale(1.2); /* Aumenta levemente o ícone ao passar o mouse */
+}
   @media (max-width: 768px) { /* Para dispositivos móveis */
     .header {
       padding: 0 1vw; /* Reduz padding para telas menores */
